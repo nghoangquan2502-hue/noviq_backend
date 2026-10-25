@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sản phẩm theo danh mục</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        header {
+            background: #212529;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        header h1 { margin: 0; font-size: 24px; }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .info, .table-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 9px 13px;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back { background: #6c757d; }
+        .edit { background: #0d6efd; }
+
+        .table-box { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border-bottom: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #343a40;
+            color: white;
+        }
+
+        .product-img {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .status-active { color: #198754; }
+        .status-inactive { color: #dc3545; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Quản trị cửa hàng đồ gia dụng</h1>
+    </header>
+
+    <main class="container">
+        <div class="info">
+            <h2>Danh mục: {{ category.category_name }}</h2>
+
+            <p>
+                <strong>Mã danh mục:</strong>
+                {{ category.category_id }}
+            </p>
+
+            <p>
+                <strong>Mô tả:</strong>
+                {{ category.description or 'Chưa có mô tả' }}
+            </p>
+
+            <p>
+                <strong>Số sản phẩm:</strong>
+                {{ products | length }}
+            </p>
+
+            <a class="btn back"
+               href="{{ url_for('admin_categories') }}">
+                ← Quay lại danh mục
+            </a>
+        </div>
+
+        <div class="table-box">
+            <h2>Danh sách sản phẩm</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã SP</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Mô tả</th>
+                        <th>Giá</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.product_id }}</td>
+
+                        <td>
+                            {% if product.image_url %}
+                                {% if product.image_url.startswith('http://') or product.image_url.startswith('https://') %}
+                                    <img class="product-img"
+                                         src="{{ product.image_url }}"
+                                         alt="{{ product.product_name }}">
+                                {% else %}
+                                    <img class="product-img"
+                                         src="{{ url_for('static', filename=product.image_url if product.image_url.startswith('uploads/') else 'uploads/' ~ product.image_url) }}"
+                                         alt="{{ product.product_name }}">
+                                {% endif %}
+                            {% else %}
+                                Chưa có ảnh
+                            {% endif %}
+                        </td>
+
+                        <td>{{ product.product_name }}</td>
+
+                        <td>{{ product.description or 'Chưa có mô tả' }}</td>
+
+                        <td>
+                            {{ "{:,.0f}".format(product.price) }} VNĐ
+                        </td>
+
+                        <td>
+                            {% if product.is_active %}
+                                <span class="status-active">Đang bán</span>
+                            {% else %}
+                                <span class="status-inactive">Ngừng bán</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="empty">
+                            Danh mục này chưa có sản phẩm.
+                            Bạn cần gán sản phẩm vào danh mục khi thêm hoặc sửa sản phẩm.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

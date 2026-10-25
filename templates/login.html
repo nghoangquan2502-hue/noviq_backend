@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Gia Dụng Việt</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f0f7f2;
+            color: #26352c;
+        }
+
+        header {
+            background: white;
+            padding: 18px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dce8df;
+        }
+
+        .logo {
+            color: #087f5b;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #f59e0b;
+        }
+
+        .home-link {
+            color: #087f5b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            min-height: calc(100vh - 140px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 16px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .icon {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin: 0 0 10px;
+        }
+
+        .description {
+            text-align: center;
+            color: #718078;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 7px;
+            font-size: 14px;
+            background: #e8f6ee;
+            color: #17633e;
+        }
+
+        .message.error,
+        .message.danger {
+            background: #fff0f0;
+            color: #a61b1b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            display: block;
+            width: 100%;
+            height: 48px;
+            padding: 12px;
+            border: 1px solid #ccd9cf;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #26352c;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #087f5b;
+            box-shadow: 0 0 0 3px rgba(8, 127, 91, 0.12);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 70px;
+        }
+
+        .show-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #087f5b;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px 4px;
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            height: 48px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 8px;
+            background: #087f5b;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #066747;
+        }
+
+        .register-text {
+            margin-top: 22px;
+            text-align: center;
+            font-size: 14px;
+            color: #718078;
+        }
+
+        .register-text a {
+            color: #087f5b;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .register-text a:hover,
+        .home-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            padding: 15px;
+            text-align: center;
+            color: #718078;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 16px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .login-box {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a class="logo" href="{{ url_for('index') }}">
+            Gia Dụng<span>Việt.</span>
+        </a>
+
+        <a class="home-link" href="{{ url_for('index') }}">
+            ← Trang chủ
+        </a>
+    </header>
+
+    <main>
+        <section class="login-box">
+            <div class="icon">🏠</div>
+
+            <h1>Đăng nhập</h1>
+
+            <p class="description">
+                Chào mừng bạn quay lại Gia Dụng Việt!
+                Vui lòng nhập email và mật khẩu của bạn.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+
+            <form action="{{ url_for('login') }}" method="POST">
+                <div class="form-group">
+                    <label for="email">Gmail / Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Nhập địa chỉ email"
+                        value="{{ request.form.get('email', '') }}"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Nhập mật khẩu"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showPassword"
+                        >
+                            Hiện
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    ĐĂNG NHẬP
+                </button>
+            </form>
+
+            <p class="register-text">
+                Chưa có tài khoản?
+                <a href="{{ url_for('register') }}">Đăng ký ngay</a>
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        © 2026 Gia Dụng Việt - Website bán đồ gia dụng
+    </footer>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const showPasswordButton = document.getElementById("showPassword");
+
+        showPasswordButton.addEventListener("click", function () {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                showPasswordButton.textContent = "Ẩn";
+            } else {
+                passwordInput.type = "password";
+                showPasswordButton.textContent = "Hiện";
+            }
+        });
+    </script>
+</body>
+</html>

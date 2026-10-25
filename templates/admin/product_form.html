@@ -1,0 +1,463 @@
+
+!DOCTYPE html
+html lang=vi
+head
+    meta charset=UTF-8
+    meta name=viewport content=width=device-width, initial-scale=1.0
+
+    title
+        {{ 'Sửa sản phẩm' if product else 'Thêm sản phẩm mới' }}
+         Quản trị cửa hàng
+    title
+
+    style
+         {
+            box-sizing border-box;
+        }
+
+        body {
+            margin 0;
+            padding 30px 16px;
+            font-family Arial, Helvetica, sans-serif;
+            background #f3f6f4;
+            color #333;
+        }
+
+        .container {
+            max-width 760px;
+            margin 0 auto;
+        }
+
+        .header {
+            margin-bottom 22px;
+        }
+
+        .header h1 {
+            margin 0 0 8px;
+            color #176b45;
+            font-size 28px;
+        }
+
+        .header p {
+            margin 0;
+            color #666;
+            line-height 1.6;
+        }
+
+        .form-card {
+            padding 28px;
+            background #fff;
+            border-radius 12px;
+            box-shadow 0 4px 18px rgba(0, 0, 0, 0.07);
+        }
+
+        .form-group {
+            margin-bottom 20px;
+        }
+
+        label {
+            display block;
+            margin-bottom 8px;
+            font-weight bold;
+            color #333;
+        }
+
+        .required {
+            color #dc3545;
+        }
+
+        input,
+        select,
+        textarea {
+            display block;
+            width 100%;
+            padding 12px;
+            border 1px solid #ced4da;
+            border-radius 6px;
+            font-size 15px;
+            font-family inherit;
+            background #fff;
+        }
+
+        inputfocus,
+        selectfocus,
+        textareafocus {
+            outline none;
+            border-color #198754;
+            box-shadow 0 0 0 3px rgba(25, 135, 84, 0.12);
+        }
+
+        textarea {
+            min-height 120px;
+            resize vertical;
+            line-height 1.5;
+        }
+
+        .help-text {
+            display block;
+            margin-top 6px;
+            color #777;
+            font-size 13px;
+            line-height 1.5;
+        }
+
+        .message {
+            padding 12px 15px;
+            margin-bottom 18px;
+            border-radius 6px;
+            line-height 1.5;
+        }
+
+        .message.danger,
+        .message.error {
+            background #f8d7da;
+            color #842029;
+        }
+
+        .message.success {
+            background #d1e7dd;
+            color #0f5132;
+        }
+
+        .message.warning {
+            background #fff3cd;
+            color #664d03;
+        }
+
+        .image-preview {
+            display none;
+            margin-top 12px;
+            max-width 220px;
+            max-height 180px;
+            object-fit contain;
+            border 1px solid #ddd;
+            border-radius 8px;
+        }
+
+        .current-image {
+            margin-top 10px;
+        }
+
+        .current-image img {
+            display block;
+            max-width 220px;
+            max-height 180px;
+            object-fit contain;
+            border 1px solid #ddd;
+            border-radius 8px;
+        }
+
+        .checkbox-group {
+            display flex;
+            align-items center;
+            gap 10px;
+        }
+
+        .checkbox-group input {
+            width auto;
+            margin 0;
+        }
+
+        .checkbox-group label {
+            margin 0;
+            font-weight normal;
+        }
+
+        .button-group {
+            display flex;
+            flex-wrap wrap;
+            gap 12px;
+            margin-top 28px;
+        }
+
+        .btn {
+            display inline-block;
+            padding 12px 18px;
+            border none;
+            border-radius 6px;
+            text-decoration none;
+            text-align center;
+            font-size 15px;
+            cursor pointer;
+        }
+
+        .btn-save {
+            background #198754;
+            color white;
+        }
+
+        .btn-savehover {
+            background #146c43;
+        }
+
+        .btn-cancel {
+            background #6c757d;
+            color white;
+        }
+
+        .btn-cancelhover {
+            background #565e64;
+        }
+
+        .note {
+            margin-top 20px;
+            padding 14px;
+            background #eaf4ee;
+            border-left 4px solid #198754;
+            border-radius 4px;
+            font-size 14px;
+            line-height 1.6;
+        }
+
+        @media (max-width 600px) {
+            body {
+                padding 18px 10px;
+            }
+
+            .form-card {
+                padding 18px;
+            }
+
+            .header h1 {
+                font-size 23px;
+            }
+
+            .button-group .btn {
+                width 100%;
+            }
+        }
+    style
+head
+
+body
+div class=container
+
+    div class=header
+        h1
+            {{ 'Chỉnh sửa sản phẩm' if product else 'Thêm sản phẩm mới' }}
+        h1
+
+        p
+            {% if product %}
+                Cập nhật thông tin sản phẩm trong cửa hàng.
+            {% else %}
+                Nhập thông tin bên dưới để thêm sản phẩm vào cửa hàng.
+            {% endif %}
+        p
+    div
+
+    div class=form-card
+
+        !-- HIEN THI THONG BAO TU FLASK --
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                div class=message {{ category }}
+                    {{ message }}
+                div
+            {% endfor %}
+        {% endwith %}
+
+        !-- FORM THEM HOAC SUA SAN PHAM --
+        form
+            method=POST
+            action={% if product %}
+                {{ url_for('edit_product', product_id=product.product_id) }}
+            {% else %}
+                {{ url_for('add_product') }}
+            {% endif %}
+        
+
+            !-- TEN SAN PHAM --
+            div class=form-group
+                label for=product_name
+                    Tên sản phẩm span class=requiredspan
+                label
+
+                input
+                    type=text
+                    id=product_name
+                    name=product_name
+                    maxlength=150
+                    required
+                    placeholder=Ví dụ Nồi cơm điện
+                    value={{ product.product_name if product else request.form.get('product_name', '') }}
+                
+
+                small class=help-text
+                    Nhập tên dễ hiểu để khách hàng nhận biết sản phẩm.
+                small
+            div
+
+            !-- DANH MUC --
+            div class=form-group
+                label for=category_idDanh mục sản phẩmlabel
+
+                select id=category_id name=category_id
+                    option value=-- Chưa chọn danh mục --option
+
+                    {% for category in categories %}
+                        option
+                            value={{ category.category_id }}
+                            {% if product and product.category_id == category.category_id %}
+                                selected
+                            {% elif not product and request.form.get('category_id', '')string == category.category_idstring %}
+                                selected
+                            {% endif %}
+                        
+                            {{ category.category_name }}
+                        option
+                    {% endfor %}
+                select
+
+                small class=help-text
+                    Chọn nhóm phù hợp, chẳng hạn đồ dùng nhà bếp hoặc
+                    thiết bị điện gia dụng.
+                small
+            div
+
+            !-- GIA SAN PHAM --
+            div class=form-group
+                label for=price
+                    Giá bán (VNĐ) span class=requiredspan
+                label
+
+                input
+                    type=number
+                    id=price
+                    name=price
+                    min=0
+                    max=9999999999.99
+                    step=0.01
+                    required
+                    placeholder=Ví dụ 250000
+                    value={{ product.price if product else request.form.get('price', '') }}
+                
+
+                small class=help-text
+                    Nhập giá bằng VNĐ, không cần nhập dấu chấm phân cách
+                    hàng nghìn.
+                small
+            div
+
+            !-- MO TA --
+            div class=form-group
+                label for=descriptionMô tả sản phẩmlabel
+
+                textarea
+                    id=description
+                    name=description
+                    placeholder=Nhập chất liệu, công dụng, kích thước hoặc thông tin khác...
+                {{ product.description if product else request.form.get('description', '') }}textarea
+            div
+
+            !-- DUONG DAN ANH --
+            div class=form-group
+                label for=image_urlĐường dẫn hình ảnhlabel
+
+                input
+                    type=url
+                    id=image_url
+                    name=image_url
+                    maxlength=255
+                    placeholder=httpsexample.comsan-pham.jpg
+                    value={{ product.image_url if product else request.form.get('image_url', '') }}
+                
+
+                small class=help-text
+                    Nhập URL ảnh bắt đầu bằng http hoặc https.
+                    Phiên bản này chưa hỗ trợ tải ảnh trực tiếp từ máy tính.
+                small
+
+                {% if product and product.image_url %}
+                    div class=current-image
+                        pstrongHình ảnh hiện tạistrongp
+                        img
+                            src={{ product.image_url }}
+                            alt=Hình ảnh sản phẩm hiện tại
+                        
+                    div
+                {% endif %}
+
+                img
+                    id=imagePreview
+                    class=image-preview
+                    alt=Xem trước hình ảnh
+                
+            div
+
+            !-- TRANG THAI CHI HIEN KHI SUA --
+            {% if product %}
+                div class=form-group
+                    div class=checkbox-group
+                        input
+                            type=checkbox
+                            id=is_active
+                            name=is_active
+                            value=1
+                            {% if product.is_active %}checked{% endif %}
+                            disabled
+                        
+
+                        label for=is_active
+                            Đang kinh doanh
+                        label
+                    div
+
+                    small class=help-text
+                        Trạng thái được quản lý bằng chức năng bậttắt
+                        trong danh sách sản phẩm.
+                    small
+                div
+            {% endif %}
+
+            !-- CAC NUT --
+            div class=button-group
+                button type=submit class=btn btn-save
+                    {{ 'Lưu thay đổi' if product else 'Thêm sản phẩm' }}
+                button
+
+                a
+                    href={{ url_for('admin_products') }}
+                    class=btn btn-cancel
+                
+                    Quay lại danh sách
+                a
+            div
+
+        form
+
+        div class=note
+            strongLưu ýstrong Các trường có dấu
+            span class=requiredspan là bắt buộc.
+            Hãy kiểm tra thông tin trước khi lưu.
+        div
+
+    div
+div
+
+script
+     Xem truoc anh khi nhap URL
+    const imageInput = document.getElementById(image_url);
+    const imagePreview = document.getElementById(imagePreview);
+
+    function previewImage() {
+        const url = imageInput.value.trim();
+
+        if (url) {
+            imagePreview.src = url;
+            imagePreview.style.display = block;
+
+            imagePreview.onerror = function () {
+                imagePreview.style.display = none;
+            };
+        } else {
+            imagePreview.removeAttribute(src);
+            imagePreview.style.display = none;
+        }
+    }
+
+    imageInput.addEventListener(input, previewImage);
+script
+
+body
+html
