@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Quản trị NOVIQ{% endblock %}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6fa;
+            color: #1f2937;
+        }
+
+        .navbar {
+            min-height: 65px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 30px;
+            background: #111827;
+            color: white;
+        }
+
+        .brand {
+            font-size: 23px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar-label {
+            color: #d1d5db;
+            font-size: 14px;
+        }
+
+        .main-content {
+            padding: 25px;
+            min-height: calc(100vh - 65px);
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 15px;
+                flex-wrap: wrap;
+            }
+
+            .main-content {
+                padding: 12px;
+            }
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <header class="navbar">
+        <a class="brand" href="{{ url_for('admin_products') }}">
+            NOVIQ
+        </a>
+
+        <span class="navbar-label">Hệ thống quản trị</span>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

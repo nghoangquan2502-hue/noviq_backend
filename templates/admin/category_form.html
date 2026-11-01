@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVIQ | Biểu mẫu danh mục</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff5fa;
+            color: #241720;
+        }
+
+        header {
+            background: #171217;
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #f472b6;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            color: #f9a8d4;
+        }
+
+        main {
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: white;
+            padding: 30px;
+            border: 1px solid #fbcfe8;
+            border-radius: 16px;
+            box-shadow: 0 5px 18px #00000008;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #9d174d;
+        }
+
+        .subtitle {
+            color: #786575;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin: 22px 0 8px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #f3b4d0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: 2px solid #f9a8d4;
+            border-color: #ec4899;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #ec4899;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #be185d;
+        }
+
+        .btn-dark {
+            background: #21151e;
+        }
+
+        .btn-dark:hover {
+            background: #493141;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #786575;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>NOVIQ Admin</h1>
+
+        <nav>
+            <a href="{{ url_for('index') }}">Cửa hàng</a>
+            <a href="{{ url_for('admin_dashboard') }}">Trang quản trị</a>
+            <a href="{{ url_for('admin_categories') }}">Quản lý danh mục</a>
+            <a href="{{ url_for('logout') }}">Đăng xuất</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h2>
+                {{ 'Chỉnh sửa danh mục' if category else 'Thêm danh mục mới' }}
+            </h2>
+
+            <p class="subtitle">
+                Nhập thông tin danh mục sản phẩm cho cửa hàng NOVIQ.
+            </p>
+
+            <form method="POST">
+                <label for="category_name">Tên danh mục *</label>
+
+                <input
+                    type="text"
+                    id="category_name"
+                    name="category_name"
+                    value="{{ category.category_name if category else '' }}"
+                    placeholder="Ví dụ: Đồ dùng nhà bếp"
+                    required
+                >
+
+                <label for="description">Mô tả danh mục</label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Nhập mô tả cho danh mục..."
+                >{{ category.description if category and category.description else '' }}</textarea>
+
+                <div class="actions">
+                    <button class="btn" type="submit">
+                        {{ 'Lưu thay đổi' if category else 'Thêm danh mục' }}
+                    </button>
+
+                    <a class="btn btn-dark"
+                       href="{{ url_for('admin_categories') }}">
+                        Quay lại
+                    </a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        © NOVIQ — Nâng tầm tiện nghi, tối ưu cuộc sống.
+    </footer>
+</body>
+</html>

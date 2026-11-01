@@ -1,463 +1,626 @@
 
-!DOCTYPE html
-html lang=vi
-head
-    meta charset=UTF-8
-    meta name=viewport content=width=device-width, initial-scale=1.0
+{% extends "admin/base.html" %}
 
-    title
-        {{ 'Sửa sản phẩm' if product else 'Thêm sản phẩm mới' }}
-         Quản trị cửa hàng
-    title
+{% block title %}
+    {% if product %}Chỉnh sửa sản phẩm{% else %}Thêm sản phẩm{% endif %} | NOVIQ
+{% endblock %}
 
-    style
-         {
-            box-sizing border-box;
-        }
+{% block content %}
+<style>
+    .product-form-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px;
+        color: #1f2937;
+    }
 
-        body {
-            margin 0;
-            padding 30px 16px;
-            font-family Arial, Helvetica, sans-serif;
-            background #f3f6f4;
-            color #333;
-        }
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
 
-        .container {
-            max-width 760px;
-            margin 0 auto;
-        }
+    .form-header h1 {
+        margin: 0 0 8px;
+        font-size: 27px;
+        font-weight: 700;
+    }
 
-        .header {
-            margin-bottom 22px;
-        }
+    .form-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
 
-        .header h1 {
-            margin 0 0 8px;
-            color #176b45;
-            font-size 28px;
-        }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        color: #374151;
+        background: #fff;
+        text-decoration: none;
+        font-size: 14px;
+    }
 
-        .header p {
-            margin 0;
-            color #666;
-            line-height 1.6;
+    .back-link:hover {
+        background: #f3f4f6;
+    }
+
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .form-section-title {
+        margin: 0 0 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .form-group {
+        min-width: 0;
+        margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+        color: #111827;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    textarea.form-control {
+        min-height: 130px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .form-help {
+        display: block;
+        margin-top: 7px;
+        color: #6b7280;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .image-upload-box {
+        padding: 20px;
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        background: #f9fafb;
+    }
+
+    .image-upload-box input[type="file"] {
+        display: block;
+        width: 100%;
+        margin-top: 12px;
+        font-size: 14px;
+    }
+
+    .image-preview-wrapper {
+        margin-top: 18px;
+    }
+
+    .image-preview-label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .image-preview {
+        display: block;
+        width: 220px;
+        max-width: 100%;
+        height: 220px;
+        object-fit: contain;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .image-empty {
+        width: 220px;
+        max-width: 100%;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        color: #9ca3af;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .status-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #f9fafb;
+    }
+
+    .status-box input {
+        width: 17px;
+        height: 17px;
+        margin-top: 2px;
+        accent-color: #2563eb;
+        cursor: pointer;
+    }
+
+    .status-box label {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .status-box strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .status-box small {
+        color: #6b7280;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid #e5e7eb;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .btn-cancel {
+        background: #fff;
+        border-color: #d1d5db;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background: #f3f4f6;
+    }
+
+    .btn-submit {
+        background: #2563eb;
+        color: #fff;
+    }
+
+    .btn-submit:hover {
+        background: #1d4ed8;
+    }
+
+    .flash-message {
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .flash-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .flash-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .flash-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    @media (max-width: 700px) {
+        .product-form-page {
+            padding: 14px;
         }
 
         .form-card {
-            padding 28px;
-            background #fff;
-            border-radius 12px;
-            box-shadow 0 4px 18px rgba(0, 0, 0, 0.07);
+            padding: 18px;
         }
 
-        .form-group {
-            margin-bottom 20px;
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
         }
 
-        label {
-            display block;
-            margin-bottom 8px;
-            font-weight bold;
-            color #333;
+        .form-group.full-width {
+            grid-column: auto;
         }
 
-        .required {
-            color #dc3545;
+        .form-header h1 {
+            font-size: 23px;
         }
 
-        input,
-        select,
-        textarea {
-            display block;
-            width 100%;
-            padding 12px;
-            border 1px solid #ced4da;
-            border-radius 6px;
-            font-size 15px;
-            font-family inherit;
-            background #fff;
+        .form-actions {
+            flex-direction: column-reverse;
         }
 
-        inputfocus,
-        selectfocus,
-        textareafocus {
-            outline none;
-            border-color #198754;
-            box-shadow 0 0 0 3px rgba(25, 135, 84, 0.12);
-        }
-
-        textarea {
-            min-height 120px;
-            resize vertical;
-            line-height 1.5;
-        }
-
-        .help-text {
-            display block;
-            margin-top 6px;
-            color #777;
-            font-size 13px;
-            line-height 1.5;
-        }
-
-        .message {
-            padding 12px 15px;
-            margin-bottom 18px;
-            border-radius 6px;
-            line-height 1.5;
-        }
-
-        .message.danger,
-        .message.error {
-            background #f8d7da;
-            color #842029;
-        }
-
-        .message.success {
-            background #d1e7dd;
-            color #0f5132;
-        }
-
-        .message.warning {
-            background #fff3cd;
-            color #664d03;
-        }
-
-        .image-preview {
-            display none;
-            margin-top 12px;
-            max-width 220px;
-            max-height 180px;
-            object-fit contain;
-            border 1px solid #ddd;
-            border-radius 8px;
-        }
-
-        .current-image {
-            margin-top 10px;
-        }
-
-        .current-image img {
-            display block;
-            max-width 220px;
-            max-height 180px;
-            object-fit contain;
-            border 1px solid #ddd;
-            border-radius 8px;
-        }
-
-        .checkbox-group {
-            display flex;
-            align-items center;
-            gap 10px;
-        }
-
-        .checkbox-group input {
-            width auto;
-            margin 0;
-        }
-
-        .checkbox-group label {
-            margin 0;
-            font-weight normal;
-        }
-
-        .button-group {
-            display flex;
-            flex-wrap wrap;
-            gap 12px;
-            margin-top 28px;
-        }
-
-        .btn {
-            display inline-block;
-            padding 12px 18px;
-            border none;
-            border-radius 6px;
-            text-decoration none;
-            text-align center;
-            font-size 15px;
-            cursor pointer;
-        }
-
-        .btn-save {
-            background #198754;
-            color white;
-        }
-
-        .btn-savehover {
-            background #146c43;
-        }
-
-        .btn-cancel {
-            background #6c757d;
-            color white;
-        }
-
-        .btn-cancelhover {
-            background #565e64;
-        }
-
-        .note {
-            margin-top 20px;
-            padding 14px;
-            background #eaf4ee;
-            border-left 4px solid #198754;
-            border-radius 4px;
-            font-size 14px;
-            line-height 1.6;
-        }
-
-        @media (max-width 600px) {
-            body {
-                padding 18px 10px;
-            }
-
-            .form-card {
-                padding 18px;
-            }
-
-            .header h1 {
-                font-size 23px;
-            }
-
-            .button-group .btn {
-                width 100%;
-            }
-        }
-    style
-head
-
-body
-div class=container
-
-    div class=header
-        h1
-            {{ 'Chỉnh sửa sản phẩm' if product else 'Thêm sản phẩm mới' }}
-        h1
-
-        p
-            {% if product %}
-                Cập nhật thông tin sản phẩm trong cửa hàng.
-            {% else %}
-                Nhập thông tin bên dưới để thêm sản phẩm vào cửa hàng.
-            {% endif %}
-        p
-    div
-
-    div class=form-card
-
-        !-- HIEN THI THONG BAO TU FLASK --
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                div class=message {{ category }}
-                    {{ message }}
-                div
-            {% endfor %}
-        {% endwith %}
-
-        !-- FORM THEM HOAC SUA SAN PHAM --
-        form
-            method=POST
-            action={% if product %}
-                {{ url_for('edit_product', product_id=product.product_id) }}
-            {% else %}
-                {{ url_for('add_product') }}
-            {% endif %}
-        
-
-            !-- TEN SAN PHAM --
-            div class=form-group
-                label for=product_name
-                    Tên sản phẩm span class=requiredspan
-                label
-
-                input
-                    type=text
-                    id=product_name
-                    name=product_name
-                    maxlength=150
-                    required
-                    placeholder=Ví dụ Nồi cơm điện
-                    value={{ product.product_name if product else request.form.get('product_name', '') }}
-                
-
-                small class=help-text
-                    Nhập tên dễ hiểu để khách hàng nhận biết sản phẩm.
-                small
-            div
-
-            !-- DANH MUC --
-            div class=form-group
-                label for=category_idDanh mục sản phẩmlabel
-
-                select id=category_id name=category_id
-                    option value=-- Chưa chọn danh mục --option
-
-                    {% for category in categories %}
-                        option
-                            value={{ category.category_id }}
-                            {% if product and product.category_id == category.category_id %}
-                                selected
-                            {% elif not product and request.form.get('category_id', '')string == category.category_idstring %}
-                                selected
-                            {% endif %}
-                        
-                            {{ category.category_name }}
-                        option
-                    {% endfor %}
-                select
-
-                small class=help-text
-                    Chọn nhóm phù hợp, chẳng hạn đồ dùng nhà bếp hoặc
-                    thiết bị điện gia dụng.
-                small
-            div
-
-            !-- GIA SAN PHAM --
-            div class=form-group
-                label for=price
-                    Giá bán (VNĐ) span class=requiredspan
-                label
-
-                input
-                    type=number
-                    id=price
-                    name=price
-                    min=0
-                    max=9999999999.99
-                    step=0.01
-                    required
-                    placeholder=Ví dụ 250000
-                    value={{ product.price if product else request.form.get('price', '') }}
-                
-
-                small class=help-text
-                    Nhập giá bằng VNĐ, không cần nhập dấu chấm phân cách
-                    hàng nghìn.
-                small
-            div
-
-            !-- MO TA --
-            div class=form-group
-                label for=descriptionMô tả sản phẩmlabel
-
-                textarea
-                    id=description
-                    name=description
-                    placeholder=Nhập chất liệu, công dụng, kích thước hoặc thông tin khác...
-                {{ product.description if product else request.form.get('description', '') }}textarea
-            div
-
-            !-- DUONG DAN ANH --
-            div class=form-group
-                label for=image_urlĐường dẫn hình ảnhlabel
-
-                input
-                    type=url
-                    id=image_url
-                    name=image_url
-                    maxlength=255
-                    placeholder=httpsexample.comsan-pham.jpg
-                    value={{ product.image_url if product else request.form.get('image_url', '') }}
-                
-
-                small class=help-text
-                    Nhập URL ảnh bắt đầu bằng http hoặc https.
-                    Phiên bản này chưa hỗ trợ tải ảnh trực tiếp từ máy tính.
-                small
-
-                {% if product and product.image_url %}
-                    div class=current-image
-                        pstrongHình ảnh hiện tạistrongp
-                        img
-                            src={{ product.image_url }}
-                            alt=Hình ảnh sản phẩm hiện tại
-                        
-                    div
-                {% endif %}
-
-                img
-                    id=imagePreview
-                    class=image-preview
-                    alt=Xem trước hình ảnh
-                
-            div
-
-            !-- TRANG THAI CHI HIEN KHI SUA --
-            {% if product %}
-                div class=form-group
-                    div class=checkbox-group
-                        input
-                            type=checkbox
-                            id=is_active
-                            name=is_active
-                            value=1
-                            {% if product.is_active %}checked{% endif %}
-                            disabled
-                        
-
-                        label for=is_active
-                            Đang kinh doanh
-                        label
-                    div
-
-                    small class=help-text
-                        Trạng thái được quản lý bằng chức năng bậttắt
-                        trong danh sách sản phẩm.
-                    small
-                div
-            {% endif %}
-
-            !-- CAC NUT --
-            div class=button-group
-                button type=submit class=btn btn-save
-                    {{ 'Lưu thay đổi' if product else 'Thêm sản phẩm' }}
-                button
-
-                a
-                    href={{ url_for('admin_products') }}
-                    class=btn btn-cancel
-                
-                    Quay lại danh sách
-                a
-            div
-
-        form
-
-        div class=note
-            strongLưu ýstrong Các trường có dấu
-            span class=requiredspan là bắt buộc.
-            Hãy kiểm tra thông tin trước khi lưu.
-        div
-
-    div
-div
-
-script
-     Xem truoc anh khi nhap URL
-    const imageInput = document.getElementById(image_url);
-    const imagePreview = document.getElementById(imagePreview);
-
-    function previewImage() {
-        const url = imageInput.value.trim();
-
-        if (url) {
-            imagePreview.src = url;
-            imagePreview.style.display = block;
-
-            imagePreview.onerror = function () {
-                imagePreview.style.display = none;
-            };
-        } else {
-            imagePreview.removeAttribute(src);
-            imagePreview.style.display = none;
+        .form-actions .btn {
+            width: 100%;
         }
     }
+</style>
 
-    imageInput.addEventListener(input, previewImage);
-script
+<div class="product-form-page">
 
-body
-html
+    <div class="form-header">
+        <div>
+            <h1>
+                {% if product %}
+                    Chỉnh sửa sản phẩm
+                {% else %}
+                    Thêm sản phẩm mới
+                {% endif %}
+            </h1>
+
+            <p>
+                {% if product %}
+                    Cập nhật thông tin sản phẩm trong hệ thống NOVIQ.
+                {% else %}
+                    Điền thông tin để thêm sản phẩm vào cửa hàng NOVIQ.
+                {% endif %}
+            </p>
+        </div>
+
+        <a href="{{ url_for('admin_products') }}" class="back-link">
+            ← Quay lại danh sách
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message
+                    {% if category == 'success' %}flash-success
+                    {% elif category == 'error' or category == 'danger' %}flash-error
+                    {% else %}flash-warning{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="form-card">
+
+        <form
+            method="POST"
+            action="{% if product %}{{ url_for('edit_product', product_id=product['product_id']) }}{% else %}{{ url_for('add_product') }}{% endif %}"
+            enctype="multipart/form-data"
+        >
+
+            <h2 class="form-section-title">Thông tin sản phẩm</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group full-width">
+                    <label for="product_name">
+                        Tên sản phẩm <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="product_name"
+                        name="product_name"
+                        class="form-control"
+                        placeholder="Ví dụ: Nồi chiên không dầu NOVIQ"
+                        value="{{ request.form.get('product_name', product['product_name'] if product else '') }}"
+                        maxlength="255"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id">
+                        Danh mục <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="category_id"
+                        name="category_id"
+                        class="form-control"
+                        required
+                    >
+                        <option value="">-- Chọn danh mục --</option>
+
+                        {% for category in categories %}
+                            <option
+                                value="{{ category['category_id'] }}"
+                                {% if request.form.get('category_id', product['category_id'] if product else '')|string == category['category_id']|string %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ category['category_name'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <small class="form-help">
+                        Chọn danh mục phù hợp với sản phẩm.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">
+                        Giá bán (VNĐ) <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        class="form-control"
+                        placeholder="Ví dụ: 350000"
+                        value="{{ request.form.get('price', product['price'] if product else '') }}"
+                        min="0"
+                        step="1000"
+                        required
+                    >
+
+                    <small class="form-help">
+                        Nhập giá bán bằng VNĐ, không cần nhập dấu chấm phân cách.
+                    </small>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Mô tả sản phẩm</label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        class="form-control"
+                        placeholder="Nhập mô tả, đặc điểm và công dụng của sản phẩm..."
+                    >{{ request.form.get('description', product['description'] if product else '') }}</textarea>
+                </div>
+
+            </div>
+
+            <h2 class="form-section-title" style="margin-top: 12px;">
+                Hình ảnh sản phẩm
+            </h2>
+
+            <div class="form-group">
+                <label for="image_file">Chọn ảnh từ máy tính</label>
+
+                <div class="image-upload-box">
+                    <strong>Chọn hình ảnh sản phẩm</strong>
+
+                    <p class="form-help">
+                        Hỗ trợ JPG, JPEG, PNG và WEBP. Dung lượng tối đa 5 MB mỗi ảnh.
+                    </p>
+
+                    <input
+                        type="file"
+                        id="image_file"
+                        name="image_file"
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    >
+
+                    <small class="form-help">
+                        {% if product and product['image_url'] %}
+                            Nếu không chọn ảnh mới, hệ thống sẽ giữ đường dẫn ảnh hiện tại.
+                        {% else %}
+                            Vui lòng chọn ảnh rõ nét để hiển thị sản phẩm trên cửa hàng.
+                        {% endif %}
+                    </small>
+
+                    <div class="image-preview-wrapper">
+                        <span class="image-preview-label">Xem trước hình ảnh</span>
+
+                        {% if product and product['image_url'] %}
+                            {% set old_image = product['image_url'] %}
+                            {% if old_image.startswith('http://') or old_image.startswith('https://') %}
+                                <img
+                                    id="imagePreview"
+                                    class="image-preview"
+                                    src="{{ old_image }}"
+                                    alt="Ảnh sản phẩm hiện tại"
+                                    onerror="this.style.display='none'; document.getElementById('imageEmpty').style.display='flex';"
+                                >
+                            {% else %}
+                                <img
+                                    id="imagePreview"
+                                    class="image-preview"
+                                    src="{{ url_for('static', filename=old_image if old_image.startswith('uploads/') else 'uploads/products/' + old_image) }}"
+                                    alt="Ảnh sản phẩm hiện tại"
+                                    onerror="this.style.display='none'; document.getElementById('imageEmpty').style.display='flex';"
+                                >
+                            {% endif %}
+
+                            <div id="imageEmpty" class="image-empty" style="display:none;">
+                                Chưa có ảnh xem trước
+                            </div>
+                        {% else %}
+                            <img
+                                id="imagePreview"
+                                class="image-preview"
+                                src=""
+                                alt="Xem trước ảnh sản phẩm"
+                                style="display:none;"
+                            >
+
+                            <div id="imageEmpty" class="image-empty">
+                                Chưa chọn hình ảnh
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="form-section-title" style="margin-top: 12px;">
+                Trạng thái hiển thị
+            </h2>
+
+            <div class="form-group">
+                <div class="status-box">
+                    <input
+                        type="checkbox"
+                        id="is_active"
+                        name="is_active"
+                        value="1"
+                        {% if request.form %}
+                            {% if request.form.get('is_active') %}checked{% endif %}
+                        {% elif not product or product['is_active'] %}checked{% endif %}
+                    >
+
+                    <label for="is_active">
+                        <strong>Kích hoạt sản phẩm</strong>
+                        <small>
+                            Khi được kích hoạt, sản phẩm có thể hiển thị trên cửa hàng
+                            tùy theo điều kiện truy vấn của website.
+                        </small>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('admin_products') }}" class="btn btn-cancel">
+                    Hủy
+                </a>
+
+                <button type="submit" class="btn btn-submit">
+                    {% if product %}
+                        Lưu thay đổi
+                    {% else %}
+                        Thêm sản phẩm
+                    {% endif %}
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const imageInput = document.getElementById("image_file");
+        const imagePreview = document.getElementById("imagePreview");
+        const imageEmpty = document.getElementById("imageEmpty");
+
+        if (!imageInput || !imagePreview || !imageEmpty) {
+            return;
+        }
+
+        let temporaryImageUrl = null;
+
+        imageInput.addEventListener("change", function () {
+            const file = this.files && this.files[0];
+
+            if (temporaryImageUrl) {
+                URL.revokeObjectURL(temporaryImageUrl);
+                temporaryImageUrl = null;
+            }
+
+            if (!file) {
+                if (imagePreview.getAttribute("src")) {
+                    imagePreview.style.display = "block";
+                    imageEmpty.style.display = "none";
+                } else {
+                    imagePreview.style.display = "none";
+                    imageEmpty.style.display = "flex";
+                }
+                return;
+            }
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+                alert("Vui lòng chọn ảnh JPG, JPEG, PNG hoặc WEBP.");
+                this.value = "";
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Ảnh vượt quá dung lượng 5 MB. Vui lòng chọn ảnh nhỏ hơn.");
+                this.value = "";
+                return;
+            }
+
+            temporaryImageUrl = URL.createObjectURL(file);
+            imagePreview.src = temporaryImageUrl;
+            imagePreview.style.display = "block";
+            imageEmpty.style.display = "none";
+        });
+    });
+</script>
+{% endblock %}

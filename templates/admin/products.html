@@ -4,211 +4,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý sản phẩm</title>
+
+    <title>NOVIQ | Quản lý sản phẩm</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f3f5f7;
             margin: 0;
-            padding: 30px;
-            color: #333;
+            font-family: Arial, sans-serif;
+            background: #fff5fa;
+            color: #241720;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 25px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #ddd;
-        }
-
-        h1 {
-            color: #176b45;
-        }
-
-        .top-bar {
+        header {
+            background: #171217;
+            color: white;
+            padding: 20px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #f472b6;
+            font-size: 26px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #f9a8d4;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border: 1px solid #fbcfe8;
+            border-radius: 16px;
+            box-shadow: 0 5px 18px #00000008;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            color: #9d174d;
+        }
+
+        .subtitle {
+            color: #786575;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 22px 0;
         }
 
         .btn {
             display: inline-block;
-            padding: 10px 14px;
+            padding: 10px 13px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            background: #ec4899;
+            color: white;
             text-decoration: none;
             cursor: pointer;
-            color: white;
-            font-size: 14px;
+            font-size: 13px;
+            white-space: nowrap;
         }
 
-        .add {
-            background: #198754;
+        .btn:hover {
+            background: #be185d;
         }
 
-        .home {
-            background: #6c757d;
+        .btn-dark {
+            background: #21151e;
         }
 
-        .delete {
-            background: #dc3545;
+        .btn-dark:hover {
+            background: #493141;
         }
 
-        .table-wrapper {
+        .btn-edit {
+            background: #db2777;
+        }
+
+        .btn-edit:hover {
+            background: #9d174d;
+        }
+
+        .btn-danger {
+            background: #b91c1c;
+        }
+
+        .btn-danger:hover {
+            background: #991b1b;
+        }
+
+        .btn-success {
+            background: #15803d;
+        }
+
+        .btn-success:hover {
+            background: #166534;
+        }
+
+        .table-wrap {
+            width: 100%;
             overflow-x: auto;
         }
 
         table {
             width: 100%;
+            min-width: 1050px;
             border-collapse: collapse;
-            min-width: 700px;
+            margin-top: 12px;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
+            padding: 14px 12px;
             text-align: left;
+            border-bottom: 1px solid #fce7f3;
+            vertical-align: middle;
         }
 
         th {
-            background: #176b45;
-            color: white;
+            background: #fce7f3;
+            color: #9d174d;
+            white-space: nowrap;
         }
 
-        tr:nth-child(even) {
-            background: #f8f9fa;
+        tbody tr:hover td {
+            background: #fffafd;
         }
 
         .product-image {
-            width: 65px;
-            height: 65px;
-            object-fit: cover;
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            border: 1px solid #fbcfe8;
+            border-radius: 10px;
+            background: white;
+            padding: 4px;
         }
 
-        .message {
-            padding: 12px;
-            margin-bottom: 15px;
-            background: #d1e7dd;
-            color: #0f5132;
-            border-radius: 5px;
+        .product-name {
+            min-width: 160px;
+            font-weight: bold;
+        }
+
+        .product-description {
+            max-width: 240px;
+            min-width: 180px;
+            color: #786575;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .price {
+            color: #be185d;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .status-hidden {
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        .actions {
+            min-width: 170px;
+        }
+
+        .actions form {
+            display: inline-block;
+            margin: 2px;
         }
 
         .empty {
+            padding: 35px;
+            text-align: center;
+            color: #786575;
+        }
+
+        .flash {
+            padding: 13px 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+            background: #fce7f3;
+            color: #831843;
+        }
+
+        .flash.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .flash.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        footer {
             text-align: center;
             padding: 25px;
+            color: #786575;
+        }
+
+        @media (max-width: 700px) {
+            header {
+                padding: 18px 20px;
+            }
+
+            main {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+
+            .page-heading {
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 
 <body>
-<div class="container">
 
-    <div class="top-bar">
-        <h1>Quản lý sản phẩm</h1>
+<header>
+    <h1>NOVIQ Admin</h1>
 
-        <div>
-            <a href="{{ url_for('add_product') }}"
-               class="btn add">
+    <nav>
+        <a href="{{ url_for('index') }}">Cửa hàng</a>
+        <a href="{{ url_for('admin_dashboard') }}">Trang quản trị</a>
+        <a href="{{ url_for('admin_categories') }}">Quản lý danh mục</a>
+        <a href="{{ url_for('logout') }}">Đăng xuất</a>
+    </nav>
+</header>
+
+<main>
+    <section class="panel">
+
+        <div class="page-heading">
+            <div>
+                <h2>Quản lý sản phẩm</h2>
+                <p class="subtitle">
+                    Xem, chỉnh sửa và quản lý các sản phẩm của cửa hàng NOVIQ.
+                </p>
+            </div>
+        </div>
+
+        <!-- THÔNG BÁO -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- CÁC NÚT CHỨC NĂNG -->
+        <div class="toolbar">
+            <a class="btn" href="{{ url_for('add_product') }}">
                 + Thêm sản phẩm
             </a>
 
-            <a href="{{ url_for('admin') }}"
-               class="btn home">
-                Trang quản trị
+            <a class="btn btn-dark"
+               href="{{ url_for('admin_dashboard') }}">
+                Về trang quản trị
+            </a>
+
+            <a class="btn btn-dark"
+               href="{{ url_for('admin_categories') }}">
+                Quản lý danh mục
             </a>
         </div>
-    </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <div class="message">{{ message }}</div>
-        {% endfor %}
-    {% endwith %}
+        <!-- BẢNG DANH SÁCH SẢN PHẨM -->
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã SP</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá bán</th>
+                        <th>Mô tả</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Mã</th>
-                    <th>Hình ảnh</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Danh mục</th>
-                    <th>Giá</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.product_id }}</td>
 
-            <tbody>
-                {% for product in products %}
-                <tr>
-                    <td>{{ product.product_id }}</td>
+                        <td>
+                            {% if product.image_url %}
+                                <img
+                                    class="product-image"
+                                    src="{{ product.image_url }}"
+                                    alt="{{ product.product_name }}"
+                                    loading="lazy"
+                                    onerror="this.style.display='none';"
+                                >
+                            {% else %}
+                                <span>Chưa có ảnh</span>
+                            {% endif %}
+                        </td>
 
-                    <td>
-                        {% if product.image_url %}
-                            <img
-                                src="{{ product.image_url }}"
-                                alt="{{ product.product_name }}"
-                                class="product-image"
-                            >
-                        {% else %}
-                            Chưa có ảnh
-                        {% endif %}
-                    </td>
+                        <td class="product-name">
+                            {{ product.product_name }}
+                        </td>
 
-                    <td>{{ product.product_name }}</td>
+                        <td>
+                            {{ product.category_name or 'Chưa phân loại' }}
+                        </td>
 
-                    <td>
-                        {{ product.category_name or 'Chưa phân loại' }}
-                    </td>
+                        <td class="price">
+                            {{ "{:,.0f}".format(product.price) }} ₫
+                        </td>
 
-                    <td>
-                        {{ "{:,.0f}".format(product.price) }} VNĐ
-                    </td>
+                        <td class="product-description">
+                            {{ product.description or 'Chưa có mô tả' }}
+                        </td>
 
-                    <td>
-                        {% if product.is_active %}
-                            Đang bán
-                        {% else %}
-                            Ngừng bán
-                        {% endif %}
-                    </td>
+                        <td>
+                            {% if product.is_active %}
+                                <span class="status status-active">
+                                    Đang hiển thị
+                                </span>
+                            {% else %}
+                                <span class="status status-hidden">
+                                    Đã ẩn
+                                </span>
+                            {% endif %}
+                        </td>
 
-                    <td>
-                        <form
-                            method="POST"
-                            action="{{ url_for(
-                                'delete_product',
-                                product_id=product.product_id
-                            ) }}"
-                            onsubmit="return confirm(
-                                'Em có chắc muốn xóa sản phẩm này không?'
-                            );"
-                        >
-                            <button type="submit" class="btn delete">
-                                Xóa
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                        <td class="actions">
+                            <!-- NÚT SỬA SẢN PHẨM -->
+                            <a
+                                class="btn btn-edit"
+                                href="{{ url_for(
+                                    'edit_product',
+                                    product_id=product.product_id
+                                ) }}">
+                                ✏️ Sửa
+                            </a>
 
-                {% else %}
-                <tr>
-                    <td colspan="7" class="empty">
-                        Chưa có sản phẩm nào.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                            <!-- NÚT ẨN SẢN PHẨM -->
+                            {% if product.is_active %}
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'delete_product',
+                                        product_id=product.product_id
+                                    ) }}"
+                                    onsubmit="return confirm(
+                                        'Bạn có chắc muốn ẩn sản phẩm này khỏi cửa hàng?'
+                                    );">
 
-</div>
+                                    <button
+                                        class="btn btn-danger"
+                                        type="submit">
+                                        Ẩn sản phẩm
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span style="color:#786575;font-size:12px;">
+                                    Sản phẩm đã ẩn
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="empty">
+                            Chưa có sản phẩm nào trong cơ sở dữ liệu.
+                            <br><br>
+                            Hãy nhấn “Thêm sản phẩm” để đăng sản phẩm đầu tiên.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+</main>
+
+<footer>
+    © NOVIQ — Nâng tầm tiện nghi, tối ưu cuộc sống.
+</footer>
+
 </body>
 </html>

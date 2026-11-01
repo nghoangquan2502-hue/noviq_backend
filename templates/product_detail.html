@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.product_name }} - Cửa hàng gia dụng</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7f5;
+            color: #26332a;
+        }
+
+        header {
+            background: #198754;
+            color: white;
+            padding: 18px 7%;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .breadcrumb {
+            margin-bottom: 22px;
+            color: #66736a;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: #198754;
+            text-decoration: none;
+        }
+
+        .product-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .product-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+            background: #f7f9f7;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            max-height: 460px;
+            object-fit: contain;
+        }
+
+        .no-image {
+            color: #849087;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .category {
+            display: inline-block;
+            background: #e3f4e9;
+            color: #198754;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 29px;
+            line-height: 1.4;
+            margin: 5px 0 15px;
+        }
+
+        .product-id {
+            color: #788179;
+            font-size: 14px;
+        }
+
+        .price {
+            color: #dc3545;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 22px 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin: 22px 0 10px;
+        }
+
+        .description {
+            line-height: 1.8;
+            color: #58645b;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .btn-back {
+            border: 1px solid #198754;
+            color: #198754;
+        }
+
+        .btn-home {
+            background: #198754;
+            color: white;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 25px;
+            text-align: center;
+            color: #68736a;
+            background: white;
+        }
+
+        @media (max-width: 700px) {
+            .product-detail {
+                grid-template-columns: 1fr;
+                padding: 18px;
+                gap: 22px;
+            }
+
+            .product-image {
+                min-height: 230px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .price {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="{{ url_for('index') }}">
+                🏠 CỬA HÀNG GIA DỤNG
+            </a>
+
+            <a href="{{ url_for('index') }}">
+                Trang chủ
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('index') }}">Trang chủ</a>
+            / Chi tiết sản phẩm
+        </div>
+
+        <section class="product-detail">
+            <div class="product-image">
+                {% if product.image_url %}
+                    {% if product.image_url.startswith('http://')
+                          or product.image_url.startswith('https://') %}
+                        <img
+                            src="{{ product.image_url }}"
+                            alt="{{ product.product_name }}"
+                        >
+                    {% else %}
+                        <img
+                            src="{{ url_for('static', filename=product.image_url.replace('static/', '')) }}"
+                            alt="{{ product.product_name }}"
+                        >
+                    {% endif %}
+                {% else %}
+                    <div class="no-image">
+                        Chưa có hình ảnh sản phẩm
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <span class="category">
+                    {{ product.category_name or 'Chưa phân loại' }}
+                </span>
+
+                <h1>{{ product.product_name }}</h1>
+
+                <p class="product-id">
+                    Mã sản phẩm: SP{{ product.product_id }}
+                </p>
+
+                <div class="price">
+                    {{ "{:,.0f}".format(product.price|float).replace(",", ".") }} VNĐ
+                </div>
+
+                <h2 class="section-title">Thông tin sản phẩm</h2>
+
+                <div class="description">{{
+                    product.description
+                    if product.description
+                    else 'Sản phẩm chưa có mô tả chi tiết.'
+                }}</div>
+
+                <div class="actions">
+                    <a href="{{ url_for('index') }}" class="btn btn-back">
+                        ← Quay lại
+                    </a>
+
+                    <a href="{{ url_for('index') }}" class="btn btn-home">
+                        Xem sản phẩm khác
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        © 2026 Cửa hàng gia dụng. Cảm ơn quý khách đã ghé thăm!
+    </footer>
+</body>
+</html>
