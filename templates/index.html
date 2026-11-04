@@ -435,14 +435,19 @@
 
         .product-buttons {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
+        }
+
+        .product-buttons form {
+            min-width: 0;
         }
 
         .product-buttons .btn {
             width: 100%;
+            min-height: 40px;
             font-size: 13px;
-            padding: 10px 12px;
+            padding: 10px 8px;
         }
 
         /* KHÔNG CÓ SẢN PHẨM */
@@ -692,6 +697,12 @@
                 </form>
 
                 <div class="header-actions">
+
+                    <!-- NUT GIO HANG -->
+                    <a class="btn btn-outline" href="{{ url_for('cart') }}">
+                        🛒 Giỏ hàng ({{ cart_count|default(0) }})
+                    </a>
+
                     {% if session.get('user_id') %}
                         <span>Xin chào, {{ session.get('full_name', 'bạn') }}</span>
 
@@ -971,12 +982,31 @@
                                 </div>
 
                                 <div class="product-buttons">
+
+                                    <!-- NUT XEM CHI TIET -->
                                     <a
-                                        class="btn"
+                                        class="btn btn-outline"
                                         href="{{ url_for('product_detail', product_id=product.product_id) }}"
                                     >
                                         Xem chi tiết
                                     </a>
+
+                                    <!-- NUT THEM VAO GIO HANG -->
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('add_to_cart', product_id=product.product_id) }}"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="quantity"
+                                            value="1"
+                                        >
+
+                                        <button type="submit" class="btn">
+                                            🛒 Thêm vào giỏ
+                                        </button>
+                                    </form>
+
                                 </div>
 
                             </div>

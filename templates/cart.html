@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Giỏ hàng | NOVIQ</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #faf7f9;
+            color: #171717;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #eee;
+            padding: 18px 5%;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            color: #ec4899;
+            font-size: 27px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        .header-link {
+            color: #be185d;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .cart-box {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 16px 10px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        .cart-table th {
+            background: #fff0f7;
+            color: #be185d;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-align: left;
+        }
+
+        .product-image {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .product-name {
+            font-weight: bold;
+        }
+
+        .price {
+            color: #be185d;
+            font-weight: bold;
+        }
+
+        .quantity-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quantity-form input {
+            width: 55px;
+            padding: 8px 4px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .quantity-btn {
+            border: none;
+            background: #fce7f3;
+            color: #be185d;
+            width: 28px;
+            height: 32px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-update {
+            background: #fce7f3;
+            color: #be185d;
+        }
+
+        .btn-remove {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-checkout {
+            background: #ec4899;
+            color: white;
+            padding: 13px 24px;
+            font-size: 15px;
+        }
+
+        .btn-checkout:hover {
+            background: #be185d;
+        }
+
+        .btn-continue {
+            background: white;
+            border: 1px solid #ec4899;
+            color: #be185d;
+            padding: 12px 18px;
+        }
+
+        .cart-summary {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .total-price {
+            color: #dc2626;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 15px;
+        }
+
+        .empty-cart .icon {
+            font-size: 65px;
+            margin-bottom: 15px;
+        }
+
+        .empty-cart p {
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 7px;
+            background: #fff0f7;
+            color: #be185d;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #888;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 750px) {
+            .cart-box {
+                padding: 12px;
+                overflow-x: auto;
+            }
+
+            .cart-table {
+                min-width: 750px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <a href="{{ url_for('index') }}" class="logo">NOVIQ</a>
+
+        <a href="{{ url_for('index') }}" class="header-link">
+            ← Tiếp tục mua sắm
+        </a>
+    </div>
+</header>
+
+<main class="container">
+
+    <h1>Giỏ hàng của bạn</h1>
+    <p class="subtitle">
+        Kiểm tra sản phẩm và số lượng trước khi đặt hàng.
+    </p>
+
+    <!-- THÔNG BÁO -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </div>
+
+    {% if cart_items %}
+
+    <section class="cart-box">
+
+        <table class="cart-table">
+
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in cart_items %}
+
+                <tr>
+
+                    <!-- THÔNG TIN SẢN PHẨM -->
+                    <td>
+                        <div class="product-info">
+
+                            {% if item.image_url %}
+                                {% if item.image_url.startswith('http://')
+                                      or item.image_url.startswith('https://')
+                                      or item.image_url.startswith('/static/') %}
+                                    <img
+                                        class="product-image"
+                                        src="{{ item.image_url }}"
+                                        alt="{{ item.product_name }}"
+                                    >
+                                {% else %}
+                                    <img
+                                        class="product-image"
+                                        src="{{ url_for('static', filename=item.image_url) }}"
+                                        alt="{{ item.product_name }}"
+                                    >
+                                {% endif %}
+                            {% else %}
+                                <div class="product-image">
+                                    📦
+                                </div>
+                            {% endif %}
+
+                            <div>
+                                <div class="product-name">
+                                    {{ item.product_name }}
+                                </div>
+
+                                <small>
+                                    Mã sản phẩm: {{ item.product_id }}
+                                </small>
+                            </div>
+
+                        </div>
+                    </td>
+
+                    <!-- ĐƠN GIÁ -->
+                    <td>
+                        <span class="price">
+                            {{ "{:,.0f}".format(item.price) }} đ
+                        </span>
+                    </td>
+
+                    <!-- CẬP NHẬT SỐ LƯỢNG -->
+                    <td>
+                        <form
+                            action="{{ url_for('update_cart') }}"
+                            method="POST"
+                            class="quantity-form"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="product_id"
+                                value="{{ item.product_id }}"
+                            >
+
+                            <button
+                                type="button"
+                                class="quantity-btn"
+                                onclick="changeQuantity(this, -1)"
+                            >−</button>
+
+                            <input
+                                type="number"
+                                name="quantity_{{ item.product_id }}"
+                                value="{{ item.quantity }}"
+                                min="1"
+                                max="99"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="quantity-btn"
+                                onclick="changeQuantity(this, 1)"
+                            >+</button>
+
+                            <button
+                                type="submit"
+                                class="btn btn-update"
+                            >
+                                Cập nhật
+                            </button>
+
+                        </form>
+                    </td>
+
+                    <!-- THÀNH TIỀN -->
+                    <td>
+                        <span class="price">
+                            {{ "{:,.0f}".format(item.subtotal) }} đ
+                        </span>
+                    </td>
+
+                    <!-- XÓA SẢN PHẨM -->
+                    <td>
+                        <form
+                            action="{{ url_for('remove_from_cart', product_id=item.product_id) }}"
+                            method="POST"
+                            onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');"
+                        >
+                            <button
+                                type="submit"
+                                class="btn btn-remove"
+                            >
+                                Xóa
+                            </button>
+                        </form>
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+        <!-- TỔNG TIỀN -->
+        <div class="cart-summary">
+
+            <div>
+                <div>Tổng thanh toán:</div>
+
+                <div class="total-price">
+                    {{ "{:,.0f}".format(total) }} đ
+                </div>
+            </div>
+
+            <div class="cart-actions">
+
+                <a
+                    href="{{ url_for('index') }}"
+                    class="btn btn-continue"
+                >
+                    Tiếp tục mua sắm
+                </a>
+
+                <a
+                    href="{{ url_for('checkout') }}"
+                    class="btn btn-checkout"
+                >
+                    Tiến hành đặt hàng →
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    {% else %}
+
+    <!-- GIỎ HÀNG TRỐNG -->
+    <section class="cart-box empty-cart">
+
+        <div class="icon">🛒</div>
+
+        <h2>Giỏ hàng đang trống</h2>
+
+        <p>
+            Bạn chưa thêm sản phẩm nào vào giỏ hàng.
+        </p>
+
+        <a
+            href="{{ url_for('index') }}"
+            class="btn btn-checkout"
+        >
+            Khám phá sản phẩm
+        </a>
+
+    </section>
+
+    {% endif %}
+
+</main>
+
+<footer>
+    © 2026 NOVIQ - Đồ gia dụng hiện đại
+</footer>
+
+<script>
+    function changeQuantity(button, amount) {
+        const input = button.parentElement.querySelector(
+            'input[type="number"]'
+        );
+
+        let quantity = parseInt(input.value) || 1;
+
+        quantity += amount;
+
+        if (quantity < 1) quantity = 1;
+        if (quantity > 99) quantity = 99;
+
+        input.value = quantity;
+    }
+</script>
+
+</body>
+</html>

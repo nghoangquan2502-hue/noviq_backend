@@ -4,26 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.product_name }} - Cửa hàng gia dụng</title>
+    <title>{{ product.product_name }} - NOVIQ</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f5f7f5;
-            color: #26332a;
+            background: #fff8fb;
+            color: #30252b;
         }
-
+        a { text-decoration: none; }
         header {
-            background: #198754;
-            color: white;
-            padding: 18px 7%;
+            background: #fff;
+            border-bottom: 1px solid #f1dce6;
+            padding: 16px 6%;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-
         .header-inner {
             max-width: 1200px;
             margin: auto;
@@ -33,154 +32,249 @@
             gap: 15px;
             flex-wrap: wrap;
         }
-
-        header a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
+        .logo {
+            color: #d63384;
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: 1px;
         }
-
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .nav a { color: #493b43; font-weight: 600; }
+        .nav a:hover { color: #d63384; }
+        .cart-link {
+            background: #fff0f6;
+            color: #c22570 !important;
+            padding: 10px 15px;
+            border-radius: 22px;
+        }
+        .cart-count {
+            display: inline-block;
+            min-width: 21px;
+            padding: 2px 6px;
+            margin-left: 4px;
+            border-radius: 20px;
+            background: #d63384;
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+        }
         .container {
-            max-width: 1100px;
-            margin: 30px auto;
+            max-width: 1200px;
+            margin: 30px auto 55px;
             padding: 0 20px;
         }
-
         .breadcrumb {
             margin-bottom: 22px;
-            color: #66736a;
+            color: #887780;
             font-size: 14px;
         }
-
-        .breadcrumb a {
-            color: #198754;
-            text-decoration: none;
-        }
-
+        .breadcrumb a { color: #d63384; }
         .product-detail {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 35px;
-            background: white;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 38px;
             padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            background: #fff;
+            border: 1px solid #f3e4eb;
+            border-radius: 18px;
+            box-shadow: 0 8px 28px rgba(110, 55, 80, .07);
         }
-
         .product-image {
+            min-height: 390px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 320px;
-            background: #f7f9f7;
-            border-radius: 12px;
             overflow: hidden;
+            background: #fff8fb;
+            border-radius: 14px;
         }
-
         .product-image img {
             width: 100%;
-            max-height: 460px;
+            max-height: 500px;
             object-fit: contain;
         }
-
         .no-image {
-            color: #849087;
-            padding: 30px;
+            padding: 35px;
+            color: #9b8992;
             text-align: center;
         }
-
         .category {
             display: inline-block;
-            background: #e3f4e9;
-            color: #198754;
-            padding: 7px 12px;
+            padding: 7px 13px;
             border-radius: 20px;
+            background: #fff0f6;
+            color: #c22570;
             font-size: 13px;
-            margin-bottom: 12px;
+            font-weight: 700;
         }
-
         h1 {
-            font-size: 29px;
-            line-height: 1.4;
-            margin: 5px 0 15px;
-        }
-
-        .product-id {
-            color: #788179;
-            font-size: 14px;
-        }
-
-        .price {
-            color: #dc3545;
+            margin: 14px 0 10px;
             font-size: 30px;
-            font-weight: bold;
+            line-height: 1.35;
+        }
+        .product-id {
+            margin: 0;
+            color: #95858d;
+            font-size: 13px;
+        }
+        .price {
             margin: 22px 0;
+            color: #d6336c;
+            font-size: 30px;
+            font-weight: 800;
         }
-
         .section-title {
-            font-size: 18px;
-            margin: 22px 0 10px;
+            margin: 22px 0 9px;
+            font-size: 17px;
         }
-
         .description {
+            color: #65565e;
             line-height: 1.8;
-            color: #58645b;
             white-space: pre-line;
             overflow-wrap: anywhere;
         }
-
+        .stock-note {
+            margin-top: 16px;
+            color: #39845b;
+            font-size: 14px;
+        }
+        .quantity-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 22px;
+        }
+        .quantity-row label { font-weight: 700; }
+        .quantity-input {
+            width: 85px;
+            padding: 11px;
+            border: 1px solid #e5cbd7;
+            border-radius: 8px;
+            font-size: 16px;
+        }
         .actions {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            margin-top: 28px;
+            margin-top: 18px;
         }
-
         .btn {
-            display: inline-block;
-            padding: 12px 18px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 9px;
+            padding: 13px 19px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
         }
-
-        .btn-back {
-            border: 1px solid #198754;
-            color: #198754;
+        .btn-primary {
+            background: #d63384;
+            color: #fff;
         }
-
-        .btn-home {
-            background: #198754;
-            color: white;
+        .btn-primary:hover { background: #b9256d; }
+        .btn-secondary {
+            background: #fff0f6;
+            color: #bd286e;
         }
-
+        .btn-secondary:hover { background: #fce0ec; }
+        .flash-list { margin-bottom: 20px; }
+        .flash-message {
+            padding: 12px 15px;
+            margin-bottom: 9px;
+            border-radius: 9px;
+            background: #fff0f6;
+            color: #a52361;
+        }
+        .flash-message.success {
+            background: #eaf8ef;
+            color: #247342;
+        }
+        .flash-message.danger {
+            background: #fff0f0;
+            color: #b42318;
+        }
+        .flash-message.warning {
+            background: #fff7e6;
+            color: #946200;
+        }
+        .related-section { margin-top: 42px; }
+        .related-section h2 {
+            margin-bottom: 18px;
+            font-size: 22px;
+        }
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .related-card {
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #f1e1e9;
+            border-radius: 13px;
+            transition: .2s;
+        }
+        .related-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(110, 55, 80, .09);
+        }
+        .related-image {
+            height: 175px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff8fb;
+        }
+        .related-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .related-info { padding: 13px; }
+        .related-name {
+            min-height: 42px;
+            color: #3c3037;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+        .related-price {
+            margin-top: 8px;
+            color: #d6336c;
+            font-weight: 800;
+        }
         footer {
-            margin-top: 40px;
-            padding: 25px;
+            padding: 25px 15px;
+            background: #fff;
+            border-top: 1px solid #f1dce6;
+            color: #887780;
             text-align: center;
-            color: #68736a;
-            background: white;
         }
-
-        @media (max-width: 700px) {
+        @media (max-width: 800px) {
             .product-detail {
                 grid-template-columns: 1fr;
                 padding: 18px;
-                gap: 22px;
+                gap: 23px;
             }
-
-            .product-image {
-                min-height: 230px;
+            .product-image { min-height: 270px; }
+            h1 { font-size: 24px; }
+            .related-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
-
-            h1 {
-                font-size: 23px;
-            }
-
-            .price {
-                font-size: 25px;
-            }
+        }
+        @media (max-width: 480px) {
+            .nav { gap: 12px; }
+            .price { font-size: 25px; }
+            .actions .btn { width: 100%; }
+            .related-grid { gap: 10px; }
+            .related-image { height: 135px; }
         }
     </style>
 </head>
@@ -188,13 +282,24 @@
 <body>
     <header>
         <div class="header-inner">
-            <a href="{{ url_for('index') }}">
-                🏠 CỬA HÀNG GIA DỤNG
-            </a>
+            <a class="logo" href="{{ url_for('index') }}">NOVIQ</a>
 
-            <a href="{{ url_for('index') }}">
-                Trang chủ
-            </a>
+            <nav class="nav">
+                <a href="{{ url_for('index') }}">Trang chủ</a>
+
+                <a class="cart-link" href="{{ url_for('cart') }}">
+                    🛒 Giỏ hàng
+                    <span class="cart-count">
+                        {{ cart_count|default(0) }}
+                    </span>
+                </a>
+
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('logout') }}">Đăng xuất</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Đăng nhập</a>
+                {% endif %}
+            </nav>
         </div>
     </header>
 
@@ -204,7 +309,21 @@
             / Chi tiết sản phẩm
         </div>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-list">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         <section class="product-detail">
+
+            <!-- HÌNH ẢNH SẢN PHẨM -->
             <div class="product-image">
                 {% if product.image_url %}
                     {% if product.image_url.startswith('http://')
@@ -226,7 +345,9 @@
                 {% endif %}
             </div>
 
+            <!-- THÔNG TIN SẢN PHẨM -->
             <div class="product-info">
+
                 <span class="category">
                     {{ product.category_name or 'Chưa phân loại' }}
                 </span>
@@ -243,27 +364,102 @@
 
                 <h2 class="section-title">Thông tin sản phẩm</h2>
 
-                <div class="description">{{
-                    product.description
-                    if product.description
-                    else 'Sản phẩm chưa có mô tả chi tiết.'
-                }}</div>
-
-                <div class="actions">
-                    <a href="{{ url_for('index') }}" class="btn btn-back">
-                        ← Quay lại
-                    </a>
-
-                    <a href="{{ url_for('index') }}" class="btn btn-home">
-                        Xem sản phẩm khác
-                    </a>
+                <div class="description">
+                    {{ product.description if product.description else 'Sản phẩm chưa có mô tả chi tiết.' }}
                 </div>
+
+                <p class="stock-note">
+                    ✓ Sản phẩm đang được kinh doanh
+                </p>
+
+                <!-- FORM THÊM SẢN PHẨM VÀO GIỎ HÀNG -->
+                <form
+                    method="POST"
+                    action="{{ url_for('add_to_cart', product_id=product.product_id) }}"
+                >
+                    <div class="quantity-row">
+                        <label for="quantity">Số lượng:</label>
+
+                        <input
+                            class="quantity-input"
+                            type="number"
+                            id="quantity"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            max="99"
+                            required
+                        >
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary">
+                            🛒 Thêm vào giỏ hàng
+                        </button>
+
+                        <a href="{{ url_for('cart') }}" class="btn btn-secondary">
+                            Xem giỏ hàng
+                        </a>
+
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                            ← Tiếp tục mua sắm
+                        </a>
+                    </div>
+                </form>
             </div>
         </section>
+
+        <!-- SẢN PHẨM CÙNG DANH MỤC -->
+        {% if related_products %}
+            <section class="related-section">
+                <h2>Sản phẩm cùng danh mục</h2>
+
+                <div class="related-grid">
+                    {% for item in related_products %}
+                        <a
+                            class="related-card"
+                            href="{{ url_for('product_detail', product_id=item.product_id) }}"
+                        >
+                            <div class="related-image">
+                                {% if item.image_url %}
+                                    {% if item.image_url.startswith('http://')
+                                          or item.image_url.startswith('https://') %}
+                                        <img
+                                            src="{{ item.image_url }}"
+                                            alt="{{ item.product_name }}"
+                                        >
+                                    {% else %}
+                                        <img
+                                            src="{{ url_for('static', filename=item.image_url.replace('static/', '')) }}"
+                                            alt="{{ item.product_name }}"
+                                        >
+                                    {% endif %}
+                                {% else %}
+                                    <span class="no-image">
+                                        Chưa có hình ảnh
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="related-info">
+                                <div class="related-name">
+                                    {{ item.product_name }}
+                                </div>
+
+                                <div class="related-price">
+                                    {{ "{:,.0f}".format(item.price|float).replace(",", ".") }} VNĐ
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
     </main>
 
     <footer>
-        © 2026 Cửa hàng gia dụng. Cảm ơn quý khách đã ghé thăm!
+        © 2026 NOVIQ. Cảm ơn bạn đã mua sắm!
     </footer>
 </body>
 </html>

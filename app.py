@@ -11,6 +11,7 @@ from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import uuid
+from decimal import Decimal, InvalidOperation
 
 
 app = Flask(__name__)
@@ -110,6 +111,21 @@ def admin_required(view):
         return view(*args, **kwargs)
 
     return wrapped_view
+@app.context_processor
+def inject_cart_count():
+    """Tính tổng số lượng sản phẩm trong giỏ hàng để hiển thị trên mọi trang."""
+    cart_data = session.get("cart", {})
+    if not isinstance(cart_data, dict):
+        cart_data = {}
+
+    total_quantity = 0
+    for quantity in cart_data.values():
+        try:
+            total_quantity += int(quantity)
+        except (TypeError, ValueError):
+            continue
+
+    return {"cart_count": total_quantity}
 
 
 # =====================================================
@@ -989,7 +1005,230 @@ def category_products(category_id):
 
 
 # =====================================================
-# 19. TRANG LỖI
+# 19. GIỎ HÀNG VÀ ĐẶT HÀNG
+# =====================================================
+
+def get_cart_items():
+    """Đọc giỏ từ session và lấy giá hiện tại từ database."""
+    cart = session.get("cart", {})
+    if not isinstance(cart, dict) or not cart:
+        return [], Decimal("0.00")
+
+    ids = []
+    quantities = {}
+    for key, value in cart.items():
+        try:
+            pid, qty = int(key), int(value)
+            if pid > 0 and 1 <= qty <= 99:
+                ids.append(pid)
+                quantities[pid] = qty
+        except (TypeError, ValueError):
+            continue
+
+    if not ids:
+        session["cart"] = {}
+        return [], Decimal("0.00")
+
+    conn = cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        marks = ",".join(["%s"] * len(ids))
+        cursor.execute(f"""SELECT product_id, product_name, price, image_url
+            FROM products WHERE is_active = 1 AND product_id IN ({marks})""", tuple(ids))
+        rows = cursor.fetchall()
+        items, total = [], Decimal("0.00")
+        valid_cart = {}
+        for product in rows:
+            pid = int(product["product_id"])
+            qty = quantities[pid]
+            price = Decimal(str(product["price"]))
+            subtotal = price * qty
+            product.update(quantity=qty, subtotal=subtotal)
+            items.append(product)
+            total += subtotal
+            valid_cart[str(pid)] = qty
+        if valid_cart != cart:
+            session["cart"] = valid_cart
+        return items, total
+    finally:
+        close_db(cursor, conn)
+
+
+@app.route("/cart")
+def cart():
+    try:
+        cart_items, total = get_cart_items()
+        return render_template("cart.html", cart_items=cart_items, total=total)
+    except Error:
+        app.logger.exception("Lỗi tải giỏ hàng")
+        return "Không thể tải giỏ hàng. Hãy kiểm tra kết nối MySQL.", 500
+
+
+@app.route("/cart/add/<int:product_id>", methods=["POST"])
+def add_to_cart(product_id):
+    try:
+        quantity = int(request.form.get("quantity", "1"))
+    except (TypeError, ValueError):
+        quantity = 1
+    if not 1 <= quantity <= 99:
+        flash("Số lượng phải từ 1 đến 99.", "warning")
+        return redirect(request.referrer or url_for("index"))
+
+    conn = cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT product_id FROM products WHERE product_id=%s AND is_active=1", (product_id,))
+        if not cursor.fetchone():
+            flash("Sản phẩm không tồn tại hoặc đã ngừng bán.", "danger")
+            return redirect(url_for("index"))
+        cart_data = session.get("cart", {})
+        key = str(product_id)
+        new_qty = int(cart_data.get(key, 0)) + quantity
+        if new_qty > 99:
+            flash("Mỗi sản phẩm chỉ được đặt tối đa 99 cái.", "warning")
+            new_qty = 99
+        cart_data[key] = new_qty
+        session["cart"] = cart_data
+        session.modified = True
+        flash("Đã thêm sản phẩm vào giỏ hàng.", "success")
+        return redirect(url_for("cart"))
+    except Error:
+        app.logger.exception("Lỗi thêm vào giỏ hàng")
+        return "Không thể thêm sản phẩm vào giỏ hàng.", 500
+    finally:
+        close_db(cursor, conn)
+
+
+@app.route("/cart/update", methods=["POST"])
+def update_cart():
+    new_cart = {}
+    for key, value in request.form.items():
+        if not key.startswith("quantity_"):
+            continue
+        pid_text = key[len("quantity_"):]
+        try:
+            pid, qty = int(pid_text), int(value)
+            if pid > 0 and 1 <= qty <= 99:
+                new_cart[str(pid)] = qty
+        except (ValueError, TypeError):
+            continue
+    session["cart"] = new_cart
+    flash("Đã cập nhật giỏ hàng.", "success")
+    return redirect(url_for("cart"))
+
+
+@app.route("/cart/remove/<int:product_id>", methods=["POST"])
+def remove_from_cart(product_id):
+    cart_data = session.get("cart", {})
+    cart_data.pop(str(product_id), None)
+    session["cart"] = cart_data
+    flash("Đã xóa sản phẩm khỏi giỏ hàng.", "success")
+    return redirect(url_for("cart"))
+
+
+@app.route("/checkout", methods=["GET", "POST"])
+def checkout():
+    try:
+        cart_items, total = get_cart_items()
+    except Error:
+        app.logger.exception("Lỗi đọc giỏ hàng khi checkout")
+        return "Không thể tải giỏ hàng.", 500
+    if not cart_items:
+        flash("Giỏ hàng đang trống.", "warning")
+        return redirect(url_for("cart"))
+
+    if request.method == "POST":
+        customer_name = request.form.get("customer_name", "").strip()
+        phone = request.form.get("phone", "").strip()
+        shipping_address = request.form.get("shipping_address", "").strip()
+        payment_method = request.form.get("payment_method", "cod").strip().lower()
+        if not customer_name or not phone or not shipping_address:
+            flash("Vui lòng điền đầy đủ thông tin giao hàng.", "danger")
+            return render_template("checkout.html", cart_items=cart_items, total=total)
+        if len(customer_name) > 120 or len(phone) > 30 or len(shipping_address) > 500:
+            flash("Thông tin giao hàng vượt quá độ dài cho phép.", "danger")
+            return render_template("checkout.html", cart_items=cart_items, total=total)
+        if payment_method not in {"cod", "momo", "zalopay"}:
+            flash("Phương thức thanh toán không hợp lệ.", "danger")
+            return render_template("checkout.html", cart_items=cart_items, total=total)
+
+        # Không giả mạo giao dịch online: MoMo/ZaloPay chỉ ghi nhận đơn chờ thanh toán.
+        payment_status = "unpaid" if payment_method == "cod" else "pending_payment"
+        conn = cursor = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            # Đọc lại giá và trạng thái sản phẩm ngay trước khi lưu đơn.
+            ids = [int(item["product_id"]) for item in cart_items]
+            marks = ",".join(["%s"] * len(ids))
+            cursor.execute(f"SELECT product_id, product_name, price FROM products WHERE is_active=1 AND product_id IN ({marks})", tuple(ids))
+            latest = {int(p["product_id"]): p for p in cursor.fetchall()}
+            if len(latest) != len(ids):
+                conn.rollback()
+                flash("Có sản phẩm vừa ngừng bán. Vui lòng kiểm tra lại giỏ hàng.", "warning")
+                return redirect(url_for("cart"))
+            checked_items = []
+            total = Decimal("0.00")
+            for item in cart_items:
+                p = latest[int(item["product_id"])]
+                qty = int(item["quantity"])
+                price = Decimal(str(p["price"]))
+                subtotal = price * qty
+                checked_items.append((int(p["product_id"]), p["product_name"], price, qty, subtotal))
+                total += subtotal
+            cursor.execute("""INSERT INTO orders
+                (user_id, customer_name, phone, shipping_address, payment_method,
+                 payment_status, order_status, total_amount)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+                (session.get("user_id"), customer_name, phone, shipping_address,
+                 payment_method, payment_status, "pending", total))
+            order_id = cursor.lastrowid
+            for pid, name, price, qty, subtotal in checked_items:
+                cursor.execute("""INSERT INTO order_items
+                    (order_id, product_id, product_name, unit_price, quantity, subtotal)
+                    VALUES (%s,%s,%s,%s,%s,%s)""",
+                    (order_id, pid, name, price, qty, subtotal))
+            conn.commit()
+            session["cart"] = {}
+            session.modified = True
+            return redirect(url_for("order_success", order_id=order_id))
+        except Error:
+            if conn and conn.is_connected():
+                conn.rollback()
+            app.logger.exception("Lỗi tạo đơn hàng")
+            flash("Không thể lưu đơn hàng. Vui lòng thử lại.", "danger")
+            return render_template("checkout.html", cart_items=cart_items, total=total)
+        finally:
+            close_db(cursor, conn)
+
+    return render_template("checkout.html", cart_items=cart_items, total=total)
+
+
+@app.route("/order-success/<int:order_id>")
+def order_success(order_id):
+    conn = cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM orders WHERE order_id=%s", (order_id,))
+        order = cursor.fetchone()
+        if order is None:
+            abort(404)
+        # Không cho người dùng khác xem thông tin nhận hàng của đơn có tài khoản.
+        if order.get("user_id") is not None and order.get("user_id") != session.get("user_id"):
+            abort(404)
+        return render_template("order_success.html", order=order)
+    except Error:
+        app.logger.exception("Lỗi tải trang xác nhận đơn")
+        return "Không thể tải thông tin đơn hàng.", 500
+    finally:
+        close_db(cursor, conn)
+
+
+# =====================================================
+# 20. TRANG LỖI
 # =====================================================
 
 @app.errorhandler(404)
