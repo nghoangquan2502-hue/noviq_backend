@@ -1,0 +1,24 @@
+
+# Thong tin bao mat
+.env
+.env.*
+!.env.example
+
+# Moi truong Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# File log
+*.log
+
+# File tam
+*.tmp
+
+# File cau hinh IDE
+.vscode/
+
+# File he thong
+.DS_Store
+Thumbs.db

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVIQ | Quản lý danh mục</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; font-family: Arial, sans-serif;
+            background: #fff5fa; color: #241720;
+        }
+        header {
+            background: #171217; color: #fff; padding: 20px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+        }
+        header h1 { margin: 0; color: #f472b6; }
+        nav { display: flex; flex-wrap: wrap; gap: 16px; }
+        nav a { color: #fff; text-decoration: none; }
+        nav a:hover { color: #f9a8d4; }
+        main { max-width: 1150px; margin: 35px auto; padding: 0 20px; }
+        .panel {
+            background: #fff; padding: 25px; border: 1px solid #fbcfe8;
+            border-radius: 16px; box-shadow: 0 5px 18px #00000008;
+        }
+        h2 { margin-top: 0; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+        .btn {
+            display: inline-block; padding: 10px 14px; border: 0;
+            border-radius: 8px; background: #ec4899; color: #fff;
+            text-decoration: none; cursor: pointer; font-size: 14px;
+        }
+        .btn:hover { background: #be185d; }
+        .btn-dark { background: #21151e; }
+        .btn-dark:hover { background: #493141; }
+        .btn-danger { background: #b91c1c; }
+        .btn-danger:hover { background: #991b1b; }
+        .btn-small { padding: 7px 10px; margin: 2px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { padding: 13px 12px; text-align: left; border-bottom: 1px solid #fce7f3; }
+        th { background: #fce7f3; color: #9d174d; white-space: nowrap; }
+        tr:hover td { background: #fffafd; }
+        .description { min-width: 180px; white-space: pre-wrap; }
+        .count { font-weight: bold; color: #be185d; }
+        .empty { padding: 25px; text-align: center; color: #786575; }
+        .flash { padding: 12px 15px; margin: 10px 0; border-radius: 8px; background: #fce7f3; }
+        footer { text-align: center; padding: 25px; color: #786575; }
+        form { display: inline; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>NOVIQ Admin</h1>
+    <nav>
+        <a href="{{ url_for('index') }}">Cửa hàng</a>
+        <a href="{{ url_for('admin_dashboard') }}">Trang quản trị</a>
+        <a href="{{ url_for('admin_products') }}">Quản lý sản phẩm</a>
+        <a href="{{ url_for('logout') }}">Đăng xuất</a>
+    </nav>
+</header>
+
+<main>
+    <section class="panel">
+        <h2>Quản lý danh mục</h2>
+        <p>Xem, thêm, chỉnh sửa hoặc xóa danh mục sản phẩm của cửa hàng NOVIQ.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="toolbar">
+            <a class="btn" href="{{ url_for('add_category') }}">+ Thêm danh mục</a>
+            <a class="btn btn-dark" href="{{ url_for('admin_dashboard') }}">Về trang quản trị</a>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã danh mục</th>
+                        <th>Tên danh mục</th>
+                        <th>Mô tả</th>
+                        <th>Số sản phẩm</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category.category_id }}</td>
+                        <td><strong>{{ category.category_name }}</strong></td>
+                        <td class="description">{{ category.description or 'Chưa có mô tả' }}</td>
+                        <td class="count">{{ category.product_count }}</td>
+                        <td>
+                            <a class="btn btn-small"
+                               href="{{ url_for('edit_category', category_id=category.category_id) }}">Sửa</a>
+                            <a class="btn btn-dark btn-small"
+                               href="{{ url_for('category_products', category_id=category.category_id) }}">Xem sản phẩm</a>
+                            <form method="POST"
+                                  action="{{ url_for('delete_category', category_id=category.category_id) }}"
+                                  onsubmit="return confirm('Bạn có chắc muốn xóa danh mục này không?');">
+                                <button class="btn btn-danger btn-small" type="submit">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="empty">Chưa có danh mục nào. Hãy bấm “Thêm danh mục” để tạo danh mục đầu tiên.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>© NOVIQ — Nâng tầm tiện nghi, tối ưu cuộc sống.</footer>
+</body>
+</html>

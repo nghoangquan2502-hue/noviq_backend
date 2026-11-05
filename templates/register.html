@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Gia Dụng Việt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6f4;
+            margin: 0;
+            padding: 40px 16px;
+        }
+        .container {
+            max-width: 420px;
+            margin: auto;
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000012;
+        }
+        h1 { color: #176b45; text-align: center; }
+        label { display: block; margin-top: 15px; }
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 12px;
+            background: #176b45;
+            color: white;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .message { padding: 10px; background: #fce8e6; margin: 8px 0; }
+        .success { background: #e2f5e9; }
+        .back { text-align: center; margin-top: 18px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tạo tài khoản</h1>
+        <p>Đăng ký để sử dụng website Gia Dụng Việt.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <label for="full_name">Họ và tên</label>
+            <input id="full_name" name="full_name"
+                   type="text" maxlength="100" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email"
+                   type="email" maxlength="150" required>
+
+            <label for="password">Mật khẩu</label>
+            <input id="password" name="password"
+                   type="password" minlength="8"
+                   maxlength="128" required>
+
+            <label for="confirm_password">Nhập lại mật khẩu</label>
+            <input id="confirm_password" name="confirm_password"
+                   type="password" minlength="8"
+                   maxlength="128" required>
+
+            <button type="submit">Đăng ký</button>
+        </form>
+
+        <div class="back">
+            Đã có tài khoản?
+            <a href="{{ url_for('login') }}">Đăng nhập</a>
+            <br><br>
+            <a href="{{ url_for('index') }}">Về trang chủ</a>
+        </div>
+    </div>
+</body>
+</html>

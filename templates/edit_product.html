@@ -1,0 +1,81 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sửa sản phẩm</title>
+    <style>
+        body { font-family:Arial,sans-serif; background:#f4f6f9; padding:25px; }
+        .form-box { max-width:700px; margin:auto; background:white; padding:25px; border-radius:10px; }
+        label { display:block; margin-top:16px; font-weight:bold; }
+        input, select, textarea {
+            width:100%; padding:11px; margin-top:7px;
+            box-sizing:border-box; border:1px solid #cbd5e1; border-radius:6px;
+        }
+        textarea { min-height:120px; resize:vertical; }
+        button, .back {
+            display:inline-block; margin-top:20px; padding:11px 16px;
+            border:0; border-radius:6px; background:#2563eb;
+            color:white; cursor:pointer; text-decoration:none;
+        }
+        .back { background:#64748b; }
+        .current-image { display:block; max-width:200px; max-height:180px; margin-top:10px; object-fit:contain; }
+        .message { margin:10px 0; color:#b91c1c; }
+    </style>
+</head>
+<body>
+<div class="form-box">
+    <h1>Sửa sản phẩm #{{ product.product_id }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <label>Tên sản phẩm *</label>
+        <input type="text" name="product_name"
+               maxlength="150" value="{{ product.product_name }}" required>
+
+        <label>Danh mục</label>
+        <select name="category_id">
+            <option value="">-- Chọn danh mục --</option>
+            {% for c in categories %}
+                <option value="{{ c.category_id }}"
+                    {% if product.category_id == c.category_id %}selected{% endif %}>
+                    {{ c.category_name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Giá bán (VNĐ) *</label>
+        <input type="number" name="price" min="0" step="0.01"
+               value="{{ product.price }}" required>
+
+        <label>Mô tả sản phẩm</label>
+        <textarea name="description">{{ product.description or '' }}</textarea>
+
+        <label>Ảnh hiện tại</label>
+        {% if product.image_url %}
+            <img class="current-image"
+                 src="{{ url_for('static', filename=product.image_url) }}"
+                 alt="{{ product.product_name }}">
+        {% else %}
+            <p>Sản phẩm chưa có ảnh.</p>
+        {% endif %}
+
+        <label>Chọn ảnh mới (không bắt buộc)</label>
+        <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
+        <small>Để trống nếu muốn giữ nguyên ảnh hiện tại.</small>
+
+        <div>
+            <button type="submit">Lưu thay đổi</button>
+            <a class="back" href="{{ url_for('admin_products') }}">Quay lại</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+```

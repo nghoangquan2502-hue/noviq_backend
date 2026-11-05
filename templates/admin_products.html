@@ -1,0 +1,169 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý sản phẩm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 25px;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .blue { background: #2563eb; color: white; }
+        .gray { background: #e5e7eb; color: #111827; }
+        .red { background: #fee2e2; color: #b91c1c; }
+        .green { background: #dcfce7; color: #166534; }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th { background: #f8fafc; }
+        .product-image {
+            width: 75px;
+            height: 65px;
+            object-fit: contain;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .message {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            background: #eff6ff;
+        }
+        form { margin: 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>Quản lý sản phẩm</h1>
+            <p>Thêm, sửa, xóa và cập nhật trạng thái sản phẩm.</p>
+        </div>
+        <div>
+            <a class="btn gray" href="{{ url_for('admin') }}">Quản trị</a>
+            <a class="btn blue" href="{{ url_for('add_product') }}">+ Thêm sản phẩm</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for p in products %}
+                <tr>
+                    <td>{{ p.product_id }}</td>
+                    <td>
+                        {% if p.image_url %}
+                            <img class="product-image"
+                                 src="{{ url_for('static', filename=p.image_url) }}"
+                                 alt="{{ p.product_name }}">
+                        {% else %}
+                            Chưa có ảnh
+                        {% endif %}
+                    </td>
+                    <td>{{ p.product_name }}</td>
+                    <td>{{ p.category_name or 'Chưa phân loại' }}</td>
+                    <td>{{ "{:,.0f}".format(p.price|float) }} đ</td>
+                    <td>
+                        {% if p.is_active %}
+                            <span style="color:green">Đang bán</span>
+                        {% else %}
+                            <span style="color:#b91c1c">Đã ẩn</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn blue"
+                               href="{{ url_for('edit_product', product_id=p.product_id) }}">
+                                Sửa
+                            </a>
+
+                            <form method="POST"
+                                  action="{{ url_for('toggle_product', product_id=p.product_id) }}">
+                                <button class="btn green" type="submit">
+                                    {% if p.is_active %}Ẩn{% else %}Hiện{% endif %}
+                                </button>
+                            </form>
+
+                            <form method="POST"
+                                  action="{{ url_for('delete_product', product_id=p.product_id) }}"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                <button class="btn red" type="submit">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">Chưa có sản phẩm nào.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+```

@@ -1,0 +1,158 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVIQ | Trang quản trị</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff5fa;
+            color: #20151d;
+        }
+
+        header {
+            background: #171217;
+            color: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #f472b6;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 16px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #fbcfe8;
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            margin-top: 0;
+        }
+
+        .pink {
+            color: #db2777;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #fbcfe8;
+            box-shadow: 0 5px 18px #00000008;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 9px;
+            background: #ec4899;
+            color: white;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #be185d;
+        }
+
+        .secondary {
+            background: #20151d;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #76616e;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>NOVIQ Admin</h1>
+
+        <nav>
+            <a href="{{ url_for('index') }}">Xem cửa hàng</a>
+            <a href="{{ url_for('logout') }}">Đăng xuất</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h2>Trang quản trị NOVIQ</h2>
+            <p>Xin chào, <strong class="pink">{{ session.get('full_name', 'Quản trị viên') }}</strong>!</p>
+            <p>Quản lý sản phẩm và danh mục của cửa hàng gia dụng tại đây.</p>
+        </section>
+
+        <section class="cards">
+            <div class="card">
+                <h3>Quản lý sản phẩm</h3>
+                <p>Thêm, sửa và quản lý trạng thái sản phẩm.</p>
+                <a class="btn" href="{{ url_for('admin_products') }}">
+                    Quản lý sản phẩm
+                </a>
+            </div>
+
+            <div class="card">
+                <h3>Quản lý danh mục</h3>
+                <p>Tạo và chỉnh sửa các danh mục hàng hóa.</p>
+                <a class="btn secondary" href="{{ url_for('admin_categories') }}">
+                    Quản lý danh mục
+                </a>
+            </div>
+
+            <div class="card">
+                <h3>Cửa hàng NOVIQ</h3>
+                <p>Quay lại trang mua sắm dành cho khách hàng.</p>
+                <a class="btn" href="{{ url_for('index') }}">
+                    Xem cửa hàng
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        © NOVIQ — Nâng tầm tiện nghi, tối ưu cuộc sống.
+    </footer>
+</body>
+</html>
+```

@@ -1,0 +1,193 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm sản phẩm</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #243b53;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd2d8;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button, .back-link {
+            display: inline-block;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button {
+            background: #1769aa;
+            color: white;
+        }
+
+        button:hover {
+            background: #0f4f85;
+        }
+
+        .back-link {
+            background: #e5e7eb;
+            color: #222;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            background: #fff0f0;
+            color: #a21b1b;
+        }
+
+        .hint {
+            color: #666;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Thêm sản phẩm mới</h1>
+        <p>Nhập thông tin sản phẩm bên dưới.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form
+            action="{{ url_for('add_product') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+            <div class="form-group">
+                <label for="product_name">Tên sản phẩm *</label>
+                <input
+                    type="text"
+                    id="product_name"
+                    name="product_name"
+                    maxlength="150"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="category_id">Danh mục</label>
+                <select id="category_id" name="category_id">
+                    <option value="">-- Chọn danh mục --</option>
+
+                    {% for category in categories %}
+                        <option value="{{ category.category_id }}">
+                            {{ category.category_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Giá sản phẩm (VNĐ) *</label>
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="description">Mô tả sản phẩm</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="5"
+                    placeholder="Nhập thông tin chi tiết về sản phẩm..."
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Ảnh sản phẩm</label>
+                <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept=".jpg,.jpeg,.png,.webp"
+                >
+                <p class="hint">
+                    Định dạng JPG, JPEG, PNG hoặc WEBP; tối đa 5 MB.
+                </p>
+            </div>
+
+            <div class="buttons">
+                <button type="submit">Thêm sản phẩm</button>
+
+                <a
+                    class="back-link"
+                    href="{{ url_for('admin_products') }}"
+                >
+                    Quay lại danh sách
+                </a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+```

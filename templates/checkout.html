@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán | NOVIQ</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #faf7f9;
+            color: #171717;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .topbar {
+            background: #171217;
+            color: white;
+            text-align: center;
+            padding: 9px;
+            font-size: 13px;
+        }
+
+        header {
+            background: white;
+            padding: 18px 5%;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo {
+            color: #ec4899;
+            font-size: 27px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 35px auto;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .page-title p {
+            color: #777;
+        }
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .box h2 {
+            font-size: 19px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #ec4899;
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .payment-option {
+            display: block;
+            padding: 13px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .payment-option:hover {
+            border-color: #ec4899;
+            background: #fff7fb;
+        }
+
+        .payment-option input {
+            margin-right: 8px;
+            accent-color: #ec4899;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-name {
+            font-weight: bold;
+        }
+
+        .product-quantity {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .product-price {
+            color: #ec4899;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .total-price {
+            color: #ec4899;
+        }
+
+        .btn-order {
+            width: 100%;
+            padding: 14px;
+            margin-top: 22px;
+            border: none;
+            border-radius: 8px;
+            background: #ec4899;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-order:hover {
+            background: #be185d;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #ec4899;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 7px;
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        NOVIQ - Cảm ơn bạn đã lựa chọn chúng tôi
+    </div>
+
+    <header>
+        <a href="{{ url_for('index') }}" class="logo">NOVIQ</a>
+    </header>
+
+    <main class="container">
+
+        <div class="page-title">
+            <h1>Thanh toán đơn hàng</h1>
+            <p>Vui lòng kiểm tra đơn hàng và điền thông tin giao hàng.</p>
+        </div>
+
+        <!-- THÔNG BÁO -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('checkout') }}">
+
+            <div class="checkout-layout">
+
+                <!-- THÔNG TIN KHÁCH HÀNG -->
+                <div>
+
+                    <section class="box">
+                        <h2>1. Thông tin nhận hàng</h2>
+
+                        <div class="form-group">
+                            <label for="customer_name">
+                                Họ và tên người nhận *
+                            </label>
+                            <input
+                                type="text"
+                                id="customer_name"
+                                name="customer_name"
+                                maxlength="120"
+                                placeholder="Nhập họ và tên"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">
+                                Số điện thoại *
+                            </label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                maxlength="30"
+                                placeholder="Nhập số điện thoại"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="shipping_address">
+                                Địa chỉ giao hàng *
+                            </label>
+                            <textarea
+                                id="shipping_address"
+                                name="shipping_address"
+                                maxlength="500"
+                                placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                                required
+                            ></textarea>
+                        </div>
+                    </section>
+
+                    <!-- PHƯƠNG THỨC THANH TOÁN -->
+                    <section class="box">
+                        <h2>2. Phương thức thanh toán</h2>
+
+                        <label class="payment-option">
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="cod"
+                                checked
+                            >
+                            Thanh toán khi nhận hàng (COD)
+                        </label>
+
+                        <label class="payment-option">
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="momo"
+                            >
+                            Ví điện tử MoMo
+                        </label>
+
+                        <label class="payment-option">
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="zalopay"
+                            >
+                            Ví điện tử ZaloPay
+                        </label>
+
+                        <p style="color:#777; font-size:13px; margin-top:12px;">
+                            Lưu ý: MoMo và ZaloPay hiện chỉ ghi nhận đơn
+                            chờ thanh toán. Website chưa tích hợp cổng
+                            thanh toán trực tuyến thực tế.
+                        </p>
+                    </section>
+
+                </div>
+
+                <!-- TÓM TẮT ĐƠN HÀNG -->
+                <div>
+                    <section class="box">
+                        <h2>3. Đơn hàng của bạn</h2>
+
+                        {% for item in cart_items %}
+                            <div class="product-item">
+                                <div>
+                                    <div class="product-name">
+                                        {{ item.product_name }}
+                                    </div>
+
+                                    <div class="product-quantity">
+                                        Số lượng: {{ item.quantity }}
+                                    </div>
+                                </div>
+
+                                <div class="product-price">
+                                    {{ "{:,.0f}".format(item.subtotal) }} đ
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="total-row">
+                            <span>Tổng thanh toán</span>
+
+                            <span class="total-price">
+                                {{ "{:,.0f}".format(total) }} đ
+                            </span>
+                        </div>
+
+                        <button type="submit" class="btn-order">
+                            XÁC NHẬN ĐẶT HÀNG
+                        </button>
+
+                        <a href="{{ url_for('cart') }}" class="back-link">
+                            ← Quay lại giỏ hàng
+                        </a>
+                    </section>
+                </div>
+
+            </div>
+        </form>
+
+    </main>
+
+    <footer>
+        © 2026 NOVIQ. All rights reserved.
+    </footer>
+
+</body>
+</html>

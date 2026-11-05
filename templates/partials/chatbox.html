@@ -1,0 +1,268 @@
+
+<div id="noviq-chat-widget">
+
+    <!-- NÚT MỞ CHATBOX -->
+    <button id="chat-toggle"
+            type="button"
+            aria-label="Mở hỗ trợ khách hàng">
+
+        <span class="chat-icon">💬</span>
+        <span class="chat-toggle-text">Hỗ trợ</span>
+
+    </button>
+
+
+    <!-- KHUNG CHAT -->
+    <div id="chat-window" class="chat-window">
+
+        <!-- HEADER -->
+        <div class="chat-header">
+
+            <div class="chat-header-info">
+
+                <div class="chat-avatar">N</div>
+
+                <div class="chat-header-text">
+                    <h3>NOVIQ Support</h3>
+
+                    <span class="chat-online">
+                        <span class="online-dot"></span>
+                        Hỗ trợ khách hàng
+                    </span>
+                </div>
+
+            </div>
+
+            <button id="chat-close"
+                    type="button"
+                    aria-label="Đóng chat">
+                &times;
+            </button>
+
+        </div>
+
+
+        <!-- NỘI DUNG CHAT -->
+        <div id="chat-messages" class="chat-messages">
+
+            <!-- LỜI CHÀO -->
+            <div class="chat-welcome">
+
+                <div class="welcome-icon">👋</div>
+
+                <h4>Xin chào!</h4>
+
+                <p>
+                    Chào mừng bạn đến với NOVIQ.
+                    Chúng tôi luôn sẵn sàng hỗ trợ bạn.
+                </p>
+
+            </div>
+
+
+            <!-- 5 CÂU HỎI NHANH -->
+            <div class="chat-quick-questions">
+
+                <p class="quick-question-title">
+                    Bạn cần NOVIQ hỗ trợ vấn đề gì?
+                </p>
+
+                <button type="button"
+                        class="quick-question-btn"
+                        data-question="Tôi muốn được tư vấn sản phẩm">
+
+                    <span class="quick-question-icon">🛍️</span>
+                    <span>Tư vấn sản phẩm</span>
+
+                </button>
+
+
+                <button type="button"
+                        class="quick-question-btn"
+                        data-question="Tôi muốn kiểm tra tình trạng đơn hàng">
+
+                    <span class="quick-question-icon">📦</span>
+                    <span>Kiểm tra đơn hàng</span>
+
+                </button>
+
+
+                <button type="button"
+                        class="quick-question-btn"
+                        data-question="Tôi muốn tìm hiểu chính sách đổi trả">
+
+                    <span class="quick-question-icon">🔄</span>
+                    <span>Chính sách đổi trả</span>
+
+                </button>
+
+
+                <button type="button"
+                        class="quick-question-btn"
+                        data-question="Tôi muốn hỏi về phí vận chuyển">
+
+                    <span class="quick-question-icon">🚚</span>
+                    <span>Phí vận chuyển</span>
+
+                </button>
+
+
+                <button type="button"
+                        class="quick-question-btn"
+                        data-question="Tôi muốn liên hệ nhân viên tư vấn">
+
+                    <span class="quick-question-icon">👨‍💼</span>
+                    <span>Liên hệ nhân viên</span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- NHẬP TÊN KHÁCH HÀNG -->
+        <div id="chat-name-area" class="chat-name-area">
+
+            <input
+                type="text"
+                id="chat-customer-name"
+                placeholder="Nhập tên của bạn..."
+                maxlength="150"
+                autocomplete="name"
+            >
+
+        </div>
+
+
+        <!-- FORM GỬI TIN NHẮN -->
+        <form id="chat-form" class="chat-form">
+
+            <input
+                type="text"
+                id="chat-input"
+                placeholder="Nhập tin nhắn..."
+                maxlength="2000"
+                autocomplete="off"
+                required
+            >
+
+            <button
+                type="submit"
+                id="chat-send"
+                aria-label="Gửi tin nhắn">
+
+                ➤
+
+            </button>
+
+        </form>
+
+
+        <!-- FOOTER -->
+        <div class="chat-footer">
+
+            <span>💗</span>
+            NOVIQ - Đồng hành cùng ngôi nhà của bạn
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- JAVASCRIPT XỬ LÝ CHATBOX -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // =====================================
+    // 1. LẤY CÁC THÀNH PHẦN CHATBOX
+    // =====================================
+
+    const chatToggle = document.getElementById("chat-toggle");
+    const chatClose = document.getElementById("chat-close");
+    const chatWindow = document.getElementById("chat-window");
+
+    const chatInput = document.getElementById("chat-input");
+
+    const quickButtons = document.querySelectorAll(
+        ".quick-question-btn"
+    );
+
+
+    // =====================================
+    // 2. MỞ CHATBOX
+    // =====================================
+
+    if (chatToggle && chatWindow) {
+
+        chatToggle.addEventListener("click", function () {
+
+            chatWindow.classList.add("active");
+
+            if (chatInput) {
+                chatInput.focus();
+            }
+
+        });
+
+    }
+
+
+    // =====================================
+    // 3. ĐÓNG CHATBOX
+    // =====================================
+
+    if (chatClose && chatWindow) {
+
+        chatClose.addEventListener("click", function () {
+
+            chatWindow.classList.remove("active");
+
+        });
+
+    }
+
+
+    // =====================================
+    // 4. XỬ LÝ CÂU HỎI NHANH
+    // =====================================
+
+    quickButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const question = this.getAttribute("data-question");
+
+            if (!chatInput || !question) {
+                return;
+            }
+
+            // Điền câu hỏi vào ô nhập
+            chatInput.value = question;
+
+            // Đưa con trỏ vào ô nhập
+            chatInput.focus();
+
+        });
+
+    });
+
+
+    // =====================================
+    // 5. ĐÓNG CHATBOX BẰNG PHÍM ESC
+    // =====================================
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape" && chatWindow) {
+
+            chatWindow.classList.remove("active");
+
+        }
+
+    });
+
+});
+</script>
